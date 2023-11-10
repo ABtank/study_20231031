@@ -60,6 +60,64 @@
             {% endfor %}
         </ul>
     </div>
+    <div class="row">
+        <label class="alert alert-info text-center">Выберите цвет</label>
+        <form method="post">
+            {% csrf_token %}
+        {% for color in colors %}
+        <label for="{{color}}">
+            <input type="radio" id="{{color}}" name="colors" value="{{ forloop.counts}}">
+            {{color}}
+        </label>
+        {% endfor %}
+            <button type="submit" class="btn btn-info" >Сохранить</button>
+        </form>
+    </div>
+
+    <div class="row">
+        <label class="alert alert-info text-center">Форма товара</label>
+        <form method="post">
+            {% csrf_token %}
+
+        <label for="product_title" class="form-control">Название:</label>
+        <input class="form-control" id="product_title" name="product_title" value="">
+
+        <label for="product_price" class="form-control">Цена:</label>
+        <input class="form-control" id="product_price" name="product_price" value="">
+
+        <label for="product_quantity" class="form-control">Кол-во:</label>
+        <input class="form-control" id="product_quantity" name="product_quantity" value="">
+
+            <button type="submit" class="btn btn-info" >Сохранить</button>
+        </form>
+    </div>
+
+
+    <div class="row">
+        <label class="alert alert-info text-center">Продукты</label>
+        <table>
+            <thead>
+            <th>Товар</th>
+            <th>Цена</th>
+            <th>Кол-во</th>
+            </thead>
+            <tbody>
+            {% for product in products %}
+            <tr>
+                <td>{{product.title}}</td>
+                <td>{{product.price}}</td>
+                <td>{{product.quantity}}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+            <td><b>Итого</b></td>
+            <td>-</td>
+            <td>-</td>
+            </tfoot>
+        </table>
+    </div>
+
 </div>
 
 </body>
