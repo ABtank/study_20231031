@@ -1,0 +1,66 @@
+﻿<!doctype html>
+{% load static %}
+{% load bootstrap5 %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <title>{{title}}</title>
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <h1><a href="{% url 'home' %}" class="btn btn-info"> hello world {{Header1}}</a></h1>
+        </div>
+        <div class="col-md-3">
+            <p><a href="{% url 'about' %}"> about </a></p>
+            <p><a href="{% url 'contacts' %}"> contacts </a></p>
+            <p><a href="{% url 'sidebar' %}"> sidebar </a></p>
+        </div>
+        <div class="col-md-3">
+            {% if value > 0 %}
+            <b>Переменная больше нуля</b>
+            {% elif value == 0 %}
+            <b>Переменная равна нулю</b>
+            {% else %}
+            <b>Переменная меньше нуля</b>
+            {% endif %}
+            <p>value + 1 = {{value|add:"1"}}</p>
+            <p>val = {{val|default:"нет данных"}}</p>
+        </div>
+
+        <div class="col-md-3">
+            <ul>
+                {% for n in numbers %}
+                <li>{{n}}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <label class="alert alert-info text-center">Новости</label>
+        <ul>
+            {% for n in news %}
+            <li>{{n.title|upper}} {{n.text|lower}} - {{n.date}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row">
+        <label class="alert alert-info text-center">Словарь</label>
+        <ul>
+            {% for key, value in dictionary.items %}
+            <li>{{key}} - {{value}}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
