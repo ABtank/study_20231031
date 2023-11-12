@@ -27,4 +27,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
     path('shop/', include('shop.urls')),
+    path('my_journal/', include('my_journal.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,0 +1,12 @@
+﻿{% load static %}
+<div class="wrapper">
+  <div id="breadcrumb">
+    <ul>
+      <li class="first">You Are Here</li>
+      <li>&#187;</li>
+      <li><a href="{% url 'my_journal' %}">Home</a></li>
+      <li>&#187;</li>
+      <li class="current"><a href="#">{{request.resolver_match.view_name}}</a></li>
+    </ul>
+  </div>
+</div>

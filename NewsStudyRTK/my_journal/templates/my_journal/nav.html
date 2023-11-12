@@ -1,0 +1,36 @@
+﻿{% load static %}
+<div class="wrapper">
+    <div id="topnav">
+        <ul class="nav">
+            <li class="{% if request.resolver_match.view_name  == 'my_journal' %}active{% endif %}"><a href="{% url 'my_journal' %}">Homepage</a></li>
+            <li class="{% if request.resolver_match.view_name  == 'style_demo' %}active{% endif %}"><a href="{% url 'style_demo' %}">Style Demo</a></li>
+            <li class="{% if request.resolver_match.view_name  == 'full_width' %}active{% endif %}"><a href="{% url 'full_width' %}">Full Width</a></li>
+            <li class="{% if request.resolver_match.view_name  == 'DropDown' %}active{% endif %}"><a href="#">DropDown</a>
+                <ul>
+                    <li><a href="#">menu item</a></li>
+                    <li><a href="#">menu item</a>
+                        <ul>
+                            <li><a href="#">menu item</a></li>
+                            <li><a href="#">menu item</a>
+                                <ul>
+                                    <li><a href="#">menu item</a></li>
+                                    <li><a href="#">menu item</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li><a href="#">menu item</a>
+                        <ul>
+                            <li><a href="#">menu item</a></li>
+                            <li><a href="#">menu item</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">menu item</a></li>
+                </ul>
+            </li>
+            <li class="{% if request.resolver_match.view_name  == 'portfolio' %}active{% endif %}"><a href="{% url 'portfolio' %}">Portfolio</a></li>
+            <li class="{% if request.resolver_match.view_name  == 'gallery' %}active{% endif %}"><a href="{% url 'gallery' %}">Gallery</a></li>
+        </ul>
+        <div class="clear"></div>
+    </div>
+</div>

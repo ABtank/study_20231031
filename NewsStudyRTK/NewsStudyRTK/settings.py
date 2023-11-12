@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'main',
     'shop',
+    'my_journal',
     'bootstrap5',
     'django_bootstrap_icons',
 ]

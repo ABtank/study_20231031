@@ -1,0 +1,55 @@
+{% extends 'my_journal/my_journal_base.html' %}
+{% load static %}
+
+{% block head %}
+<!-- FancyBox -->
+<link rel="stylesheet" href="{% static 'my_journal/js/' %}/fancybox-2.1.5/jquery.fancybox.css" type="text/css" />
+<script type="text/javascript" src="{% static 'my_journal/js/' %}/fancybox-2.1.5/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $("a[rel=gallery_group]").fancybox({
+        openEffect: 'elastic',
+        closeEffect: 'elastic',
+        openSpeed: 600,
+        closeSpeed: 600,
+        helpers: {
+            overlay: {
+                closeClick: true,
+            },
+            title: {
+                type: 'over'
+            }
+        }
+    });
+});
+</script>
+<!-- End FancyBox -->
+{% endblock %}
+
+{% block body %}
+<!-- ####################################################################################################### -->
+<div class="wrapper">
+  <div class="container">
+    <!-- ############################# -->
+    <div id="gallery" class="whitebox">
+      <div class="latestgallery">
+      <ul>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 1"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 2"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li class="last"><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 3"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 4"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 5"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li class="last"><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 6"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 7"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 8"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+        <li class="last"><a rel="gallery_group" href="{% static 'my_journal/img/' %}/470x470.gif" title="Image 9"><img src="{% static 'my_journal/img/' %}/260x130.gif" alt="" /></a></li>
+      </ul>
+        </div>
+      <br class="clear" />
+    </div>
+    <!-- ############################# -->
+    <div class="clear"></div>
+  </div>
+</div>
+<!-- ####################################################################################################### -->
+{% endblock %}

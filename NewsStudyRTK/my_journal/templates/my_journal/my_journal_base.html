@@ -1,0 +1,72 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <title>{% block title %} RTK NEWS {% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link type="text/css" rel="stylesheet" href="{% static 'my_journal/' %}css/bootstrap.min.css"/>
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" href="{% static 'my_journal/' %}css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="{% static 'my_journal/css/' %}style.css" type="text/css"/>
+    <script type="text/javascript" src="{% static 'my_journal/js/' %}jquery.min.js"></script>
+    <!-- Superfish Menu -->
+    <script type="text/javascript" src="{% static 'my_journal/js/' %}superfish/jquery.hoverIntent.js"></script>
+    <script type="text/javascript" src="{% static 'my_journal/js/' %}superfish/superfish.js"></script>
+    <script src="{% static 'my_journal/' %}js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        jQuery(function () {
+            jQuery('ul.nav').superfish();
+        });
+    </script>
+    <!-- / Superfish Menu -->
+
+    {% block head %}{% endblock %}
+
+</head>
+
+
+<body id="top">
+
+<!-- HEADER -->
+{% block header %}
+{% include 'my_journal/header.html' %}
+{% endblock %}
+<!-- /HEADER -->
+
+<!-- NAVIGATION -->
+{% block sidebar %}
+{% include 'my_journal/nav.html' %}
+{% endblock %}
+<!-- /NAVIGATION -->
+
+<!-- PATH -->
+{% block path %}
+{% include 'my_journal/path.html' %}
+{% endblock %}
+<!-- /PATH -->
+
+<!-- body -->
+{% block body %}
+{% include 'my_journal/body.html' %}
+{% endblock %}
+<!-- /body -->
+
+<!-- FOOTER -->
+{% block footer %}
+{% include 'my_journal/footer.html' %}
+{% endblock %}
+<!-- /FOOTER -->
+
+<!-- Plugins -->
+{% block footer_scripts %}{% endblock %}
+</body>
+
+</html>
