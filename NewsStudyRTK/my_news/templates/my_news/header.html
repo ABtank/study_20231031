@@ -1,0 +1,30 @@
+﻿{% load static %}
+
+<header class="d-flex justify-content-center py-1 border-bottom"  style="z-index: 990">
+    <ul class="nav nav-pills">
+
+        <li><a href="{% url 'publication' target='hot' %}"
+               class="nav-link px-2 {% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a></li>
+        <li style="margin-left: 50px;"><a href="{% url 'publication' target='fresh' %}"
+               class="nav-link px-2 {% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a></li>
+        <li style="margin-left: 50px;"><a href="{% url 'publication' target='subscription' %}"
+               class="nav-link px-2 {% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
+        </li>
+    </ul>
+
+<!--    <div class="col-md-1 text-end"></div>-->
+    <div class="dropdown position-fixed top end-0 mb-3 me-3 bd-mode-toggle col-md-1 text-end">
+        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle text-primary"
+           data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle text-primary" style="font-size: x-large;"></i>
+
+        </a>
+        <ul class="dropdown-menu text-small" >
+            <li><a class="dropdown-item {% if request.resolver_match.view_name  == 'profile' %}active{% endif %}" href="{% url 'profile' %}">Profile</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="{% url 'signIn' %}">Sign out</a></li>
+        </ul>
+    </div>
+</header>

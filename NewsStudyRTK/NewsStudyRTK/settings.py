@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'main',
     'shop',
     'my_journal',
+    'my_news',
     'bootstrap5',
     'django_bootstrap_icons',
 ]

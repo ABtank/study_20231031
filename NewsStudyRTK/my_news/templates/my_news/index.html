@@ -1,0 +1,24 @@
+﻿{% extends 'my_news/my_news_base.html' %}
+{% load static %}
+
+
+{% block body %}
+<div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-body-tertiary">
+    <div class="col-md-6 p-lg-5 mx-auto my-5">
+      <h1 class="display-3 fw-bold">Здесь нефиг делать</h1>
+      <h3 class="fw-normal text-muted mb-3">Давай переходи в разделы с новостями</h3>
+      <div class="d-flex gap-3 justify-content-center lead fw-normal">
+
+        <a href="{% url 'publication' target='hot' %}"
+               class="icon-link {% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a>
+        <a href="{% url 'publication' target='fresh' %}"
+               class="icon-link {% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a>
+        <a href="{% url 'publication' target='subscription' %}"
+               class="icon-link {% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
+
+      </div>
+    </div>
+    <div class="product-device shadow-sm d-none d-md-block"></div>
+    <div class="product-device product-device-2 shadow-sm d-none d-md-block"></div>
+  </div>
+{% endblock %}

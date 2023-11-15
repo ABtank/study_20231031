@@ -1,0 +1,30 @@
+﻿{% load static %}
+
+<!-- Sidebar -->
+<nav class="navbar navbar-inverse fixed-top" id="sidebar-wrapper" role="navigation">
+    <ul class="nav sidebar-nav">
+        <div class="sidebar-header">
+            <div class="sidebar-brand">
+                <a href="{% url 'my_news' %}" class="d-inline-flex link-body-emphasis text-decoration-none text-white">
+                    <img class="me-2" width="40" height="32" role="img"
+                         src="{% static 'my_news/' %}assets/brand/MY_NEWS.png"/> MY_NEWS</a>
+            </div>
+        </div>
+        <li><a href="{% url 'my_news' %}"
+               class="{% if request.resolver_match.view_name  == 'my_news' %}active{% endif %}">Главная</a></li>
+        <li><a href="{% url 'publication' target='hot' %}"
+               class="{% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a></li>
+        <li><a href="{% url 'publication' target='fresh' %}"
+               class="{% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a></li>
+        <li><a href="{% url 'publication' target='subscription' %}"
+               class="{% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
+        </li>
+        <li><a href="{% url 'profile' %}"
+        class="{% if request.resolver_match.view_name  == 'profile' %}active{% endif %}">Profile</a></li>
+        <li><a href="{% url 'info' %}"
+         class="{% if request.resolver_match.view_name  == 'info' %}active{% endif %}">О компании</a></li>
+        <li><a href="{% url 'signIn' %}">Sign out</a></li>
+    </ul>
+
+</nav>
+<!-- /#sidebar-wrapper -->
