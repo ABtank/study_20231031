@@ -46,6 +46,13 @@
             <span class="hamb-bottom"></span>
         </button>
         <div class="container">
+            {% if messages %}
+            <div class="row">
+                {% for message in messages %}
+                <p class="lead my-6 text-center alert alert-info {% if message.tags %} {{ message.tags }}{% endif %}"> {{ message }} </p>
+                {% endfor %}
+            </div>
+            {% endif %}
             {% block body %}
             {% include 'my_news/body.html' %}
             {% endblock %}

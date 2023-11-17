@@ -51,12 +51,12 @@
       </div>
       <div class="col-md-7 col-lg-8">
         <h4 class="mb-3">Основные данные</h4>
-        <form class="needs-validation" >
+        <form class="needs-validation"  method="post">
           {% csrf_token %}
           <div class="row g-3">
             <div class="col-sm-6">
               <label for="firstName" class="form-label">Имя</label>
-              <input type="text" class="form-control" id="firstName" placeholder="" value="" required="">
+              <input type="text" class="form-control" id="firstName" name="firstName" placeholder="" value="" required="">
               <div class="invalid-feedback">
                 Valid first name is required.
               </div>
@@ -64,7 +64,7 @@
 
             <div class="col-sm-6">
               <label for="lastName" class="form-label">Фамилия</label>
-              <input type="text" class="form-control" id="lastName" placeholder="" value="" required="">
+              <input type="text" class="form-control" id="lastName" name="lastName" placeholder="" value="" required="">
               <div class="invalid-feedback">
                 Valid last name is required.
               </div>
@@ -74,7 +74,7 @@
               <label for="username" class="form-label">Логин</label>
               <div class="input-group has-validation">
                 <span class="input-group-text">@</span>
-                <input type="text" class="form-control" id="username" placeholder="Username" required="">
+                <input type="text" class="form-control" id="username" name="username" placeholder="Username" required="">
               <div class="invalid-feedback">
                   Your username is required.
                 </div>
@@ -83,14 +83,14 @@
 
             <div class="col-12">
               <label for="email" class="form-label">Email <span class="text-body-secondary">(Optional)</span></label>
-              <input type="email" class="form-control" id="email" placeholder="you@example.com">
+              <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com">
               <div class="invalid-feedback">
                 Please enter a valid email address for shipping updates.
               </div>
             </div>
             <div class="col-12">
               <label for="phone" class="form-label">Телефон <span class="text-body-secondary">(Optional)</span></label>
-              <input type="text" class="form-control" id="phone" placeholder="79523039933">
+              <input type="text" class="form-control" id="phone" name="phone" placeholder="79523039933">
               <div class="invalid-feedback">
                 Please enter a valid email address for shipping updates.
               </div>
@@ -98,7 +98,7 @@
 
             <div class="col-md-5">
               <label for="country" class="form-label">Страна</label>
-              <select class="form-select" id="country" required="">
+              <select class="form-select" id="country" name="country" required="">
                 <option value="">Choose...</option>
                 <option value="1">Россия</option>
                 <option value="1">Россия опять</option>
@@ -111,7 +111,7 @@
 
             <div class="col-md-4">
               <label for="state" class="form-label">Город</label>
-              <select class="form-select" id="state" required="">
+              <select class="form-select" id="state" name="state" required="">
                 <option value="">Choose...</option>
                 <option value="1">Москва</option>
                 <option value="2">Санкт-Петербург</option>
@@ -127,12 +127,12 @@
           <hr class="my-4">
 
           <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="all-agree">
+            <input type="checkbox" class="form-check-input" id="all-agree" name="all-agree">
             <label class="form-check-label" for="all-agree">Согласен с соглашениями</label>
           </div>
 
           <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="save-info">
+            <input type="checkbox" class="form-check-input" id="save-info" name="save-info">
             <label class="form-check-label" for="save-info">Спамить мне на все контакты рекламой и новостями</label>
           </div>
 
