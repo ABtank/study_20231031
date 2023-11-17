@@ -27,8 +27,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Для проверки своей страницы 404, конфигурация такая:
-# DEBUG = False
-# ALLOWED_HOSTS = ["*"]
+DEBUG = False
+ALLOWED_HOSTS = ["*"]
 
 # Application definition
 

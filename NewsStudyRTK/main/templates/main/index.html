@@ -14,7 +14,24 @@
 </head>
 <body>
 <div class="container">
+    <div class="row  text-center">
+        <label class="alert alert-primary text-center"  role="alert">Домашнее задание 1</label>
+        <div class="col">
+            <h1><a href="{% url 'my_journal' %}" class="btn btn-secondary btn-sm" style="font-size: smaller;"> my_journal  -  Сайт первой попытки</a></h1>
+        </div>
+        <div class="col">
+            <h1><a href="{% url 'my_news' %}" class="btn btn-primary btn-lg" style="font-size: larger;"> <p>my_news</p> Сайт для оценки ДЗ №1</a></h1>
+        </div>
+        <div class="col">
+            <h1><a href="{% url 'shop' %}" class="btn btn-warning"  style="font-size: smaller;"> shop  -  Сайт магазина с уроков</a></h1>
+        </div>
+    </div>
+    <hr>
+    <br><br><br><br>
     <div class="row">
+        <label class="alert alert-info text-center">Пробы всякого</label>
+    </div>
+        <div class="row">
         <div class="col-md-3">
             <h1><a href="{% url 'home' %}" class="btn btn-info"> hello world {{Header1}}</a></h1>
         </div>

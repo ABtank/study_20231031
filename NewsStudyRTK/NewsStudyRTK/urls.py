@@ -20,8 +20,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 # Для проверки своей страницы 404, конфигурация такая:
-import main.views as main_views
-handler404 = main_views.custom_404
+# import main.views as main_views
+# handler404 = main_views.custom_404
+import my_news.views as my_news_views
+handler404 = my_news_views.custom_404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
