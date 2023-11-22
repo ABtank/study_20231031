@@ -120,7 +120,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    BASE_DIR / 'my_journal/static',
+    BASE_DIR / 'my_news/static',
+    BASE_DIR / 'shop/static',
+]
+# STATICFILES_FINDERS = [
+#     'django.contrib.staticfiles.finders.FileSystemFinder',
+#     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+# ]
+#
+# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+#
+# STATIC_MIME_TYPES = {
+#     '.css': 'text/css',
+#     '.js': 'application/javascript',
+# }
+#
+# # Если нужно, добавьте статических типы MIME для других файлов здесь
+# STATICFILES_DUMMY_EXTENSIONS = list(STATIC_MIME_TYPES.keys())
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
