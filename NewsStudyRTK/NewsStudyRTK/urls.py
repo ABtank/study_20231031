@@ -31,4 +31,5 @@ urlpatterns = [
     path('shop/', include('shop.urls')),
     path('my_journal/', include('my_journal.urls')),
     path('my_news/', include('my_news.urls')),
+    path('news/', include('news.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
