@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'my_journal',
     'my_news',
     'news',
+    'users',
     'bootstrap5',
     'django_bootstrap_icons',
 ]
@@ -127,6 +128,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'my_news/static',
     BASE_DIR / 'shop/static',
     BASE_DIR / 'news/static',
+    BASE_DIR / 'users/static',
 ]
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
