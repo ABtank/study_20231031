@@ -56,3 +56,24 @@ python NewsStudyRTK/manage.py runserver --insecure
 5) [x] Шаблон для навигации верхняя и боковая панель
 6) [x] Шаблон 404
 7) [x] Шаблон логина
+
+
+## Администрирование
+1) инициализация БД
+```
+python .\NewsStudyRTK\manage.py migrate
+```
+2) создание пользователя
+```
+python .\NewsStudyRTK\manage.py createsuperuser
+```
+
+## Миграциии
+1) подготовка к обновлению
+```
+python .\NewsStudyRTK\manage.py makemigrations
+```
+2) обновление БД
+```
+python .\NewsStudyRTK\manage.py migrate
+```
