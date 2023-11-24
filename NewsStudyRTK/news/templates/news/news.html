@@ -12,13 +12,19 @@
         {% for article in articles %}
             <div class="single_news">
                 <div class="p-4 p-md-5 text-white rounded bg-dark">
-                    <div class="col-md-6 px-0">
+                    <div class="col-md-12 px-0">
                         <h1 class="display-4 fst-italic"> {{ article.title }}</h1>
                         <p class="lead my-3">{{ article.anouncement }}</p>
                         <p class="lead my-3">{{ article.text }}</p>
                         <p class="lead mb-0"><a href="{{ article.get_absolute_url }}" class="text-white fw-bold">Полный
                             текст...</a></p>
-                        <p class="lead my-3">{{ article.category }}</p>
+                        <p class="lead my-3">
+                            {% for tag in article.tags.all %}
+                                <small>{{ tag.title }}</small>
+                            {% endfor %}
+                        </p>
+                        <p class="lead my-3"><u>{{ article.category }}</u></p>
+                        <p class="lead my-3"><i>{{ article.author.username }}</i></p>
                     </div>
                 </div>
             </div>

@@ -77,3 +77,11 @@ python .\NewsStudyRTK\manage.py makemigrations
 ```
 python .\NewsStudyRTK\manage.py migrate
 ```
+3) работа с картинками (Pillow)
+```
+pip install Pillow
+```
+4) работа с БД из консоли с ORM
+``` 
+python .\NewsStudyRTK\manage.py shell 
+```

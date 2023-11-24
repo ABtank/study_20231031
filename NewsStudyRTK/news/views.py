@@ -13,9 +13,13 @@ def index(request):
     # создание новости
     category = ["E", "S", "IT", "F"]
     random_number = random.randint(0, len(category) - 1)
-    numb = len(Article.objects.all()) + 1
-    author = User.objects.get(id=request.user.id)
-    article = Article(author=author, title=f"title {numb}", anouncement=f"Анонс {numb}", text=f"text {numb} " * numb,
+    len_text = random.randint(5, 100)
+    numb = Article.objects.count() + 1
+    authors = User.objects.all()
+    num_acc = random.randint(0, len(authors) - 1)
+    author = authors[num_acc]
+    article = Article(author=author, title=f"title {numb}", anouncement=f"Анонс {numb}",
+                      text=f"text {numb} " * len_text,
                       category=category[random_number])
     article.save()
 
@@ -25,13 +29,10 @@ def index(request):
 
 def news_list(request):
     context = {}
-    articles = Article.objects.all()
+    # articles = Article.objects.all()
+    articles = Article.objects.filter(author=request.user.id)
     context['articles'] = articles
-    # s = '<ul>'
-    # for article in articles:
-    #     s += f'<li><h1>{article.title}</h1> <br> {article.text}</li>'
-    # s += '</ul>'
-    # return HttpResponse(s)
+
     return render(request, "news/news.html", context)
 
 
