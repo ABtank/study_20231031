@@ -6,11 +6,15 @@ from django.shortcuts import render
 from .models import *
 
 
-def index(request):
-    context = {}
-    # article = Article.objects.all().first()
+def generate_random_list(input_list):
+    random_length = random.randint(0, len(input_list))
+    random_items = random.sample(input_list, random_length)
+    return random_items
 
-    # создание новости
+def random_article():
+    list_tags = Tag.objects.all()
+    random_tag_ids = generate_random_list(list(list_tags.values_list('id', flat=True)))
+    random_tags = Tag.objects.filter(id__in=random_tag_ids)
     category = ["E", "S", "IT", "F"]
     random_number = random.randint(0, len(category) - 1)
     len_text = random.randint(5, 100)
@@ -22,7 +26,16 @@ def index(request):
                       text=f"text {numb} " * len_text,
                       category=category[random_number])
     article.save()
+    article.tags.set(random_tags)
+    article.save()
+    return article
 
+
+def index(request):
+    context = {}
+    # article = Article.objects.all().first()
+    # создание новости
+    article = random_article()
     context['article'] = article
     return render(request, "news/index.html", context)
 

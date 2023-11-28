@@ -19,6 +19,11 @@
                         текст...</a></p>
                     <p class="lead my-3">{{ article.category }}</p>
                     <p class="lead my-3">{{ article.author.account.nickname }}</p>
+                     <p class="lead my-3">
+                        {% for tag in article.tags.all %}
+                            <small>{{ tag.title }}</small>
+                        {% endfor %}
+                     </p>
                 </div>
             </div>
         </div>
