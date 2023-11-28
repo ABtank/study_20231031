@@ -8,6 +8,25 @@
         <div class="text-center" style="margin-top:30px;">
             <h1>Список с новостями</h1>
         </div>
+        <div class="content_center">
+            <h1> Фильтр по автору: </h1>
+            <div class="form-group col-8">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                         <select class="form-select" name="author_filter" style="width:40%">
+                              <option value="0">Все авторы</option>
+                              {% for author in author_list %}
+                                  <option value="{{ author.id }}" {% if selected == author.id %} selected {% endif %}> {{ author.username }}</option>
+                              {% endfor %}
+                         </select>
+                         <span class="input-group-btn">
+                             <input type="submit" class="btn btn-success" value="Применить" style="margin: 0 15px">
+                         </span>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         {% for article in articles %}
             <div class="single_news">

@@ -43,8 +43,22 @@ def index(request):
 def news_list(request):
     context = {}
     # articles = Article.objects.all()
-    articles = Article.objects.filter(author=request.user.id)
+
+    author_list = User.objects.all()
+    selected = 0
+    if request.method == "POST":
+        print(request.POST)
+        selected = int(request.POST.get('author_filter'))
+        if selected == 0:
+            articles = Article.objects.all()
+        else:
+            articles = Article.objects.filter(author=selected)
+    else:
+        articles = Article.objects.all()
+
     context['articles'] = articles
+    context['author_list'] = author_list
+    context['selected'] = selected
 
     return render(request, "news/news.html", context)
 
