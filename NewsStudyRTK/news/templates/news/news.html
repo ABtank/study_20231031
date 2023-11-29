@@ -17,7 +17,7 @@
                          <select class="form-select" name="author_filter" style="width:40%">
                               <option value="0">Все авторы</option>
                               {% for author in author_list %}
-                                  <option value="{{ author.id }}" {% if selected == author.id %} selected {% endif %}> {{ author.username }}</option>
+                                  <option value="{{ author.id }}" {% if selected == author.id %} selected {% endif %}> {{ author.username }} ({{ author.article__count }})</option>
                               {% endfor %}
                          </select>
                          <span class="input-group-btn">
@@ -37,7 +37,7 @@
                         <p class="lead my-3">{{ article.text }}</p>
                         <p class="lead mb-0"><a href="{{ article.get_absolute_url }}" class="text-white fw-bold">Полный
                             текст...</a></p>
-                        <p class="lead my-3">
+                        <p class="lead my-3"><b>({{ article.tags__count }})</b>
                             {% for tag in article.tags.all %}
                                 <small>{{ tag.title }}</small>
                             {% endfor %}

@@ -2,6 +2,8 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.db import connection, reset_queries
+from django.db.models import Count
 
 from .models import *
 
@@ -11,9 +13,10 @@ def generate_random_list(input_list):
     random_items = random.sample(input_list, random_length)
     return random_items
 
+
 def random_article():
-    list_tags = Tag.objects.all()
-    random_tag_ids = generate_random_list(list(list_tags.values_list('id', flat=True)))
+    list_tags = Tag.objects.all().values_list('id', flat=True)
+    random_tag_ids = generate_random_list(list(list_tags))
     random_tags = Tag.objects.filter(id__in=random_tag_ids)
     category = ["E", "S", "IT", "F"]
     random_number = random.randint(0, len(category) - 1)
@@ -34,28 +37,45 @@ def random_article():
 def index(request):
     context = {}
     # article = Article.objects.all().first()
+    # articles_today = Article.publishedToday.all()
+    # print(articles_today)
+    # print(datetime.date.today())
     # создание новости
     article = random_article()
+    article = (Article.objects
+               .select_related("author")
+               .prefetch_related('tags')
+               .annotate(Count('tags'))
+               .get(id=article.id))
     context['article'] = article
     return render(request, "news/index.html", context)
 
 
 def news_list(request):
     context = {}
-    # articles = Article.objects.all()
 
-    author_list = User.objects.all()
+    author_list = User.objects.annotate(Count('article', distinct=True))
+    # for usr in author_list:
+    #     print(usr.id, usr.article__count)
     selected = 0
     if request.method == "POST":
         print(request.POST)
         selected = int(request.POST.get('author_filter'))
         if selected == 0:
-            articles = Article.objects.all()
+            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
+                Count('tags')).order_by('-dt_public', 'title').all()
         else:
-            articles = Article.objects.filter(author=selected)
+            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
+                Count('tags')).order_by('-dt_public', 'title').filter(author=selected)
     else:
-        articles = Article.objects.all()
-
+        articles = (Article.objects
+                    .select_related("author")  # select_related - один ко многим
+                    .prefetch_related('tags')  # prefetch_related - многие ко многим
+                    .annotate(Count('tags'))  # аннотирование - добавляет колонку к запросу
+                    .order_by('-dt_public', 'title')  # сортировка начиная с самых новых
+                    .all())
+        print(articles)
+    print(connection.queries)
     context['articles'] = articles
     context['author_list'] = author_list
     context['selected'] = selected

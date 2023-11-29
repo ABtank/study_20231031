@@ -85,3 +85,8 @@ pip install Pillow
 ``` 
 python .\NewsStudyRTK\manage.py shell 
 ```
+
+5) django-debug-toolbar
+```
+python -m pip install django-debug-toolbar
+```

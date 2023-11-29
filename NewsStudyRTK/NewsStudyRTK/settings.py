@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'users',
     'bootstrap5',
     'django_bootstrap_icons',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
+
+# Для debug_toolbar
+INTERNAL_IPS = ["127.0.0.1"]
 
 ROOT_URLCONF = 'NewsStudyRTK.urls'
 
@@ -111,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-# LANGUAGE_CODE = 'ru'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 

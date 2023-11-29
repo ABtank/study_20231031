@@ -1,4 +1,4 @@
-"""
+﻿"""
 URL configuration for NewsStudyRTK project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -35,4 +35,11 @@ urlpatterns = [
     path('users/', include('users.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [
+                      path('__debug/__', include(debug_toolbar.urls)),
+                  ] + urlpatterns
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

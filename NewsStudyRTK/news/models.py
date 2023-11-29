@@ -18,6 +18,10 @@ class Tag(models.Model):
         verbose_name_plural = "Теги"
 
 
+# свой фильтр
+class PublishedToday(models.Manager):
+    def get_queryset(self):
+        return super(PublishedToday, self).get_queryset().filter(dt_public__gte=datetime.date.today())
 
 
 class Article(models.Model):
@@ -35,6 +39,10 @@ class Article(models.Model):
     category = models.CharField(choices=categories, max_length=20, verbose_name="Категории")
 
     tags = models.ManyToManyField(to=Tag, blank=True, verbose_name="Теги")
+    # общие методы
+    objects = models.Manager()
+    # свой фильтр
+    publishedToday = PublishedToday()
 
     # методы модели
     def __str__(self):
