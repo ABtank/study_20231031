@@ -1,10 +1,13 @@
 ﻿import random
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db import connection, reset_queries
 from django.db.models import Count
 
+from .forms import ArticleForm
 from .models import *
 
 
@@ -92,11 +95,25 @@ def detail(request, id):
     return HttpResponse(f'<h1>{article.title}</h1> <br> {article.text}')
 
 
-def create_news(request):
-    context = {}
-    numb = len(Article.objects.all()) + 1
-    author = User.objects.get(id=request.user.id)
-    article = Article(author=author, title=f"title {numb}", anouncement=f"Анонс {numb}", text=f"text {numb} " * numb)
-    article.save()
-    context['article'] = article
-    return HttpResponse(f'<h1>{article.title}</h1> <br> {article.text}')
+# человек не аутентифицирован - отправляем на страницу другую
+@login_required(login_url="news_list")
+def create_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            if current_user.id is not None:  # проверили что не аноним
+                new_article = form.save(commit=False)  # сохранение без коммита
+                new_article.author = current_user
+                new_article.save()  # сохраняем в БД
+                form.save_m2m()
+                messages.success(request, f"Создана новая запись {new_article.title}")
+                if request.POST.get('saveAndNew') is not None:
+                    form = ArticleForm()
+                else:
+                    return redirect('news_list')
+            else:
+                messages.error(request, "Не авторизованы")
+    else:
+        form = ArticleForm()
+    return render(request, 'news/create_article.html', {'form': form})

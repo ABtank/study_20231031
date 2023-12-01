@@ -14,13 +14,22 @@
 
 </head>
 <body>
-<div class="row">
+<div class="row" style="height: 100%">
     <div class="col-4">
         {% include 'news/sidebar.html' %}
     </div>
 
-
     <div class="col-8">
+        {% if messages %}
+            <div class="row">
+                <div class="col-12">
+                    {% for message in messages %}
+                        <div class="lead text-center alert alert-info {% if message.tags %} {{ message.tags }}{% endif %}"
+                             style="margin: 0; width: 80%"> {{ message }} </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
         {% block content %}
             <div class="row">
                 <div class="text-center" style="margin-top:30px;">

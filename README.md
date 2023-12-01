@@ -90,3 +90,14 @@ python .\NewsStudyRTK\manage.py shell
 ```
 python -m pip install django-debug-toolbar
 ```
+
+
+### Формы
+1) crispy
+```
+python -m pip install django-crispy-forms
+ ```
+2) crispy-bootstrap5
+```
+python -m pip install crispy-bootstrap5
+ ```

@@ -48,6 +48,8 @@ INSTALLED_APPS = [
     'bootstrap5',
     'django_bootstrap_icons',
     'debug_toolbar',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +161,6 @@ STATICFILES_DUMMY_EXTENSIONS = list(STATIC_MIME_TYPES.keys())
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+CRISPY_ALLOWED_TEMPLATES_PACKS = "bootstrap5"

@@ -48,6 +48,20 @@
                 <div class="d-none d-lg-block">Все новости</div>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{% url 'contact_page' %}" {% if request.resolver_match.view_name == 'contact_page' %}
+               class="link-active" aria-current="page" {% endif %}>
+                <i class="fa fa-bars menu-icon"></i>
+                <div class="d-none d-lg-block">Страница обратной связи</div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'create_article' %}" {% if request.resolver_match.view_name == 'create_article' %}
+               class="link-active" aria-current="page" {% endif %}>
+                <i class="fa fa-bars menu-icon"></i>
+                <div class="d-none d-lg-block">Создание новости</div>
+            </a>
+        </li>
         <li>
             <a href="#" {% if request.path  == '/search/' %} class="link-active" aria-current="page" {% endif %}>
                 <i class="fa fa-magnifying-glass menu-icon"></i>
