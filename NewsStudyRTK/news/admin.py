@@ -6,7 +6,7 @@ from .models import *
 
 class ArticleAdmin(admin.ModelAdmin):
     list_display = ['title', 'author', 'dt_public']
-    list_filter = ['title', 'author', 'dt_public']
+    list_filter = ['tags', 'author', 'dt_public']
 
 
 
