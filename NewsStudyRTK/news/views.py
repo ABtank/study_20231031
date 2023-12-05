@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.db import connection, reset_queries
+from django.urls import reverse_lazy
 from django.views.generic import DetailView, DeleteView, UpdateView
 from django.db.models import Count
 
@@ -22,6 +23,12 @@ class ArticleUpdateView(UpdateView):
     model = Article
     template_name = 'news/create_article.html'
     fields = ['title', 'anouncement', 'text', 'tags', 'category']
+
+
+class ArticleDeleteView(DeleteView):
+    model = Article
+    success_url = reverse_lazy('news_list')
+    template_name = 'news/delete_article.html'
 
 
 def generate_random_list(input_list):

@@ -44,6 +44,8 @@
                         </p>
                         <p class="lead my-3"><u>{{ article.category }}</u></p>
                         <p class="lead my-3"><i>{{ article.author.username }}</i></p>
+                        <a href="{% url 'news_delete' article.pk %}" class="btn btn-warning" >Удалить</a>
+                        <a href="{% url 'news_update' article.pk %}" class="btn btn-primary" >Редактировать</a>
                     </div>
                 </div>
             </div>
