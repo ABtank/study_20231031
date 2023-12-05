@@ -18,6 +18,11 @@ class ArticleDetailView(DetailView):
     context_object_name = 'article'
 
 
+class ArticleUpdateView(UpdateView):
+    model = Article
+    template_name = 'news/create_article.html'
+    fields = ['title', 'anouncement', 'text', 'tags', 'category']
+
 
 def generate_random_list(input_list):
     random_length = random.randint(0, len(input_list))
