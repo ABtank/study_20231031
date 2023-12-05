@@ -61,50 +61,24 @@ def publication(request, target):
     # Фильтр
     tags_selected = []
     authors_selected = []
+    filters = Q()  # Создаем пустой объект Q
+    filters &= Q(category__iexact=target)
     if request.method == "POST":
-        print(request.POST)
-        tag_s = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
-        if len(tag_s) > 0:
-            tags_selected = tag_s
-        else:
-            tags_selected = [int(tag.id) for tag in tags_list]
+        tags_selected = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
+        if len(tags_selected) > 0:
+            filters &= Q(tags__in=tags_selected)
 
-        author_s = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
-        if len(author_s) > 0:
-            authors_selected = author_s
-        else:
-            authors_selected = [int(author.id) for author in authors_list]
-    else:
-        tags_selected = [int(tag.id) for tag in tags_list]
-        authors_selected = [int(author.id) for author in authors_list]
+        authors_selected = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
+        if len(authors_selected) > 0:
+            filters &= Q(author__in=authors_selected)
 
     match target:
-        case 'hot':
+        case 'hot' | 'fresh' | 'subscription':
             articles = (MyArticle.objects
                         .select_related("author")
                         .prefetch_related('tags')
                         .annotate(Count('tags'))
-                        .filter(category__iexact=target)
-                        .filter(tags__in=tags_selected)
-                        .filter(author__in=authors_selected)
-                        .order_by('-dt_public', 'title')
-                        .all())
-        case 'fresh':
-            articles = (MyArticle.objects
-                        .select_related("author")
-                        .prefetch_related('tags')
-                        .filter(category__iexact=target)
-                        .filter(tags__in=tags_selected)
-                        .annotate(Count('tags'))
-                        .order_by('-dt_public', 'title')
-                        .all())
-        case 'subscription':
-            articles = (MyArticle.objects
-                        .select_related("author")
-                        .prefetch_related('tags')
-                        .filter(category__iexact=target)
-                        .filter(tags__in=tags_selected)
-                        .annotate(Count('tags'))
+                        .filter(filters)
                         .order_by('-dt_public', 'title')
                         .all())
         case _:
