@@ -2,34 +2,87 @@
 {% load static %}
 
 {% block body %}
-<h1>{{target}}</h1>
-{% for i in '01234567891234567890'|make_list %}
-<strong><i>{{ forloop.counter }}</i></strong>
-<ul class="list-group list-group-flush">
-    <li class="list-group-item">
-        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
-            <div class="col-lg-12 px-0">
-                <h1 class="display-4 fst-italic">{{article.title|default:''}}</h1>
-                <p class="lead my-3">{{article.text|default:''}}</p>
-                <p class="lead my-3">{% lorem 1 p %}</p>
-                <p class="lead mb-0">
-                    <a href="{% url 'article' article_id=article.article_id mode='view' %}"
-                                        class="text-body-emphasis fw-bold">Перейти к статье...</a>
-                </p>
-            </div>
-            <div class="col-lg-12 px-0">
-                <div class="row justify-content-end">
-                    <div class="col-md-2">
-                        <a href="{% url 'article' article_id=article.article_id mode='edit' %}"
-                           class="btn btn-sm btn-primary ">Редактировать свою статью</a>
+    <h1>{{ target }}</h1>
+    <div class="row g-5">
+        <div class="col-md-8">
+            {% for article in articles %}
+                <div class="">
+                    <div class="p-4 p-md-5 rounded">
+                        <div class="col-md-12 px-0">
+                            <h1 class="display-4 fst-italic"> {{ article.title }}</h1>
+                            <p class="lead my-3"></p>
+                            <p class="lead mb-0">{{ article.anouncement }}.... <a
+                                    href="{% url 'article' article_id=article.id mode='view' %}"
+                                    class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill">Перейти к
+                                статье...</a></p>
+                            <p class="lead my-3"><b>({{ article.tags__count }})</b>
+                                {% for tag in article.tags.all %}
+                                    <small>{{ tag.title }}</small>
+                                {% endfor %}
+                            </p>
+                            <p class="lead my-3"><u>{{ article.category }}</u></p>
+                            <p class="lead my-3"><i>{{ article.author.username }}</i></p>
+                        </div>
+                        {% if request.user.id  == article.author.id %}
+                            <div class="col-lg-12 px-0">
+                                <div class="row justify-content-end">
+                                    <div class="col-md-3">
+                                        <a href="{% url 'article' article_id=article.id mode='edit' %}"
+                                           class="btn btn-sm btn-outline-primary rounded-pill">Редактировать свою
+                                            статью</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
-                </div>
+            {% endfor %}
         </div>
-    </li>
-</ul>
-{% endfor %}
-<nav class="blog-pagination py-1" aria-label="Pagination">
-    <a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
-</nav>
+        <div class="col-md-4">
+            <div class="position-sticky" style="top: 2rem; max-height: 1200px; overflow: auto;">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Теги</h4>
+                        <div class="input-group">
+                            <select class="form-select" name="tags_filter" style="width:40%" multiple>
+                                <option value=""></option>
+                                {% for tag in tags_list %}
+                                    <option value="{{ tag.id }}"
+                                            {% if tag.id in tags_selected %}
+                                            selected {% endif %}>
+                                        {{ tag.title }} ({{ tag.num_articles }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Авторы</h4>
+                        <div class="input-group">
+                            <select class="form-select" name="authors_filter" style="width:40%" multiple>
+                                <option value=""></option>
+                                {% for author in authors_list %}
+                                    <option value="{{ author.id }}"
+                                            {% if author.id in authors_selected %}
+                                            selected {% endif %}>
+                                        {{ author.username }} ({{ author.myarticle__count }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group-btn p-2">
+                        <input type="submit" class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill"
+                               value="Фильтр">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="blog-pagination py-1" aria-label="Pagination">
+        <a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
+    </div>
 {% endblock %}

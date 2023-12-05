@@ -1,113 +1,86 @@
 ﻿{% extends 'my_news/my_news_base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block body %}
-<!--{{request.resolver_match}}-->
-{% if request.resolver_match.kwargs.mode|default:''  == 'view' %}
-<div class="row g-5">
-    <div class="col-md-8">
-        <h2 class="pb-4 mb-4 fst-italic border-bottom">
-            {{article.title}}
-        </h2>
+    <!--{{request.resolver_match}}-->
+    {% if request.resolver_match.kwargs.mode|default:'' == 'view' %}
+        <div class="row g-5">
+            <div class="col-md-8">
+                <h2 class="pb-4 mb-4 fst-italic border-bottom">
+                    {{ article.title }}
+                </h2>
 
-        <article class="blog-post">
-            <p class="blog-post-meta">{{article.date}}</p>
-            <div>
-                {{article.text}}
-                {% lorem 30 p %}
+                <article class="blog-post">
+                    <p class="blog-post-meta">{{ article.date }}</p>
+                    <div>
+                        {{ article.anouncement }}
+                    </div>
+                    <div class="pt-1">
+                        {{ article.text }}
+                    </div>
+                </article>
+
+                <div class="container">
+                    <div class="py-3 row justify-content-between">
+                        <div class="col-auto mr-auto"><a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a></div>
+                        <div class="col col-auto">{% if request.user.id  == article.author.id %}
+                            <a href="{% url 'article' article_id=article.id mode='edit' %}"
+                               class="btn btn-outline-primary rounded-pill">Редактировать свою статью</a>
+                        {% endif %}
+                        </div>
+                    </div>
+                </div>
+
             </div>
-        </article>
 
-        <nav class="blog-pagination py-5" aria-label="Pagination">
-            <a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
-        </nav>
-
-    </div>
-
-    <div class="col-md-4">
-        <div class="position-sticky" style="top: 2rem;">
-            <div class="p-4 mb-3 bg-body-tertiary rounded">
-                <h4 class="fst-italic">Об авторе</h4>
-                <p class="mb-0">{% lorem 2 p %}</p>
-            </div>
+            <div class="col-md-4">
+                <div class="position-sticky" style="top: 2rem;">
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Об авторе</h4>
+                        <p class="mb-0">{{ article.author }}</p>
+                        <p class="mb-0"><b>email:</b> {{ article.author.email }}</p>
+                        <p class="mb-0"><b>Ник:</b> {{ article.author.account.nickname }}</p>
+                        <p class="mb-0"><b>Д/р:</b> {{ article.author.account.birthdate }}</p>
+                        <p class="mb-0"><b>Пол:</b> {{ article.author.account.gender }}</p>
+                    </div>
 
 
-            <div class="p-4">
-                <h4 class="fst-italic">Теги</h4>
-                <ol class="list-unstyled">
-                    <li><a href="#">{{article.tegs}}</a></li>
-                </ol>
+                    <div class="p-4">
+                        <h4 class="fst-italic">Теги ({{ article.tags__count }})</h4>
+                        <ol class="list-unstyled">
+                            {% for tag in article.tags.all %}
+                                <li><a href="#">{{ tag.title }}</a></li>
+                            {% endfor %}
+                        </ol>
+                    </div>
+
+                    <div class="p-4">
+                        <h4 class="fst-italic">Категория - {{ article.category }}</h4>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-{% endif %}
+    {% endif %}
 
 
-{% if request.resolver_match.kwargs.mode|default:''  == 'edit' %}
-<div class="py-3 text-center">
-    <h2 class="bi bi-journal-text text-primary"></h2>
-    <h2>Создание/Редактирование новости</h2>
-    <p class="lead">Заполни все и ничего не произайдет</p>
-</div>
+    {% if request.resolver_match.kwargs.mode|default:'' == 'edit' %}
+        <div class="py-3 text-center">
+            <h2 class="bi bi-journal-text text-primary"></h2>
+            <h2>Создание/Редактирование новости</h2>
+            <p class="lead">Заполни все и ничего не произайдет</p>
+        </div>
 
-<div class="row g-5">
-    <div class="col-md-12 col-lg-12">
-        <h4 class="mb-3">Основные данные</h4>
-        <form class="needs-validation" novalidate="" method="post">
-            {% csrf_token %}
-            <input type="hidden" class="form-control" id="article_id" name="article_id" value="{{article.article_id|default:0}}">
-            <div class="row g-3">
-                <div class="col-sm-12">
-                    <label for="title" class="form-label">Заголовок</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder=""
-                           value="{{article.title|default:''}}"
-                           required="required">
-                    <div class="invalid-feedback">
-                        Valid first name is required.
-                    </div>
-                </div>
-
-                <div class="col-sm-12">
-                    <label for="text" class="form-label">Текст статьи</label>
-                    <textarea type="text" class="form-control" id="text" name="text" placeholder="" value="" required="required">{{article.text|default:''}}</textarea>
-                    <div class="invalid-feedback">
-                        Valid last name is required.
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <label for="tegs" class="form-label">Теги</label>
-                    <select class="form-select" id="tegs" name="tegs" required="" multiple>
-                        <option value="">Choose...</option>
-                        <option value="дом">дом</option>
-                        <option value="работа">работа</option>
-                        <option value="огород">огород</option>
-                        <option value="клубничка">клубничка</option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Please provide a valid state.
-                    </div>
-                </div>
-
+        <div class="row g-5">
+            <div class="col-md-12 col-lg-12">
+                <h4 class="mb-3">Основные данные</h4>
+                <form class="needs-validation" novalidate="" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit" class="btn btn-primary" value="Сохранить">
+                </form>
             </div>
-
-            <hr class="my-4">
-
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_my" name="is_my" {% if article.is_my %}checked{% endif %}>
-                <label class="form-check-label" for="is_my">Моё</label>
-            </div>
-
-            <div class="form-check">
-                <input type="checkbox" class="form-check-input" id="is_annon" name="is_annon" {% if article.is_annon %}checked{% endif %}>
-                <label class="form-check-label" for="is_annon">Анонимно</label>
-            </div>
-
-            <button class="w-100 btn btn-primary btn-lg" type="submit">Отправить</button>
-        </form>
-    </div>
-</div>
-{% endif %}
+        </div>
+    {% endif %}
 
 {% endblock %}

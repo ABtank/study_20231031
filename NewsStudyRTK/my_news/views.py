@@ -1,7 +1,45 @@
-﻿from django.contrib import messages
-from django.shortcuts import render
+﻿import random
 
-from .models import Article
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.db.models import Q, Count
+from django.shortcuts import render, redirect
+
+from .forms import MyArticleForm
+from .models import MyTag, MyArticle, User
+
+
+def generate_random_list(input_list):
+    random_length = random.randint(0, len(input_list))
+    random_items = random.sample(input_list, random_length)
+    return random_items
+
+
+def random_article(target):
+    list_tags = MyTag.objects.all().values_list('id', flat=True)
+    random_tag_ids = generate_random_list(list(list_tags))
+    random_tags = MyTag.objects.filter(id__in=random_tag_ids)
+    category = ['hot', 'fresh', 'subscription']
+    random_number = random.randint(0, len(category) - 1)
+    len_text = random.randint(50, 100)
+    numb = MyArticle.objects.count() + 1
+    authors = User.objects.all()
+    num_acc = random.randint(0, len(authors) - 1)
+    author = authors[num_acc]
+    article = MyArticle(author=author, title=f"title-{target} {numb}",
+                        anouncement=f"Анонс-{target} {numb}" * (len_text // 5),
+                        text=f"{target} {numb} " * len_text,
+                        category=target)
+    article.save()
+    article.tags.set(random_tags)
+    article.save()
+    return article
+
+
+def get_category():
+    category = ['hot', 'fresh', 'subscription']
+    random_number = random.randint(0, len(category) - 1)
+    return category[random_number]
 
 
 # Create your views here.
@@ -11,59 +49,139 @@ def index(request):
 
 
 def publication(request, target):
+    random_article(target)
     context = {"target": target}
-    article1 = Article(1, "hot Новость 1", "Текст 1", "03.11.23", 1, "дом", 0)
-    article2 = Article(2, "fresh Новость 2", "Текст 2", "04.11.23", 0, "работа", 0)
-    article3 = Article(3, "subscription Новость 3", "Текст 3", "05.11.23", 0, "огород", 1)
+    tags_list = (MyTag.objects
+                 .annotate(num_articles=Count('myarticle'))
+                 .all())
+    authors_list = User.objects.annotate(Count('myarticle', distinct=True))
+    context['tags_list'] = tags_list
+    context['authors_list'] = authors_list
+
+    # Фильтр
+    tags_selected = []
+    authors_selected = []
+    if request.method == "POST":
+        print(request.POST)
+        tag_s = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
+        if len(tag_s) > 0:
+            tags_selected = tag_s
+        else:
+            tags_selected = [int(tag.id) for tag in tags_list]
+
+        author_s = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
+        if len(author_s) > 0:
+            authors_selected = author_s
+        else:
+            authors_selected = [int(author.id) for author in authors_list]
+    else:
+        tags_selected = [int(tag.id) for tag in tags_list]
+        authors_selected = [int(author.id) for author in authors_list]
+
     match target:
         case 'hot':
-            context["article"] = article1
+            articles = (MyArticle.objects
+                        .select_related("author")
+                        .prefetch_related('tags')
+                        .annotate(Count('tags'))
+                        .filter(category__iexact=target)
+                        .filter(tags__in=tags_selected)
+                        .filter(author__in=authors_selected)
+                        .order_by('-dt_public', 'title')
+                        .all())
         case 'fresh':
-            context["article"] = article2
+            articles = (MyArticle.objects
+                        .select_related("author")
+                        .prefetch_related('tags')
+                        .filter(category__iexact=target)
+                        .filter(tags__in=tags_selected)
+                        .annotate(Count('tags'))
+                        .order_by('-dt_public', 'title')
+                        .all())
         case 'subscription':
-            context["article"] = article3
+            articles = (MyArticle.objects
+                        .select_related("author")
+                        .prefetch_related('tags')
+                        .filter(category__iexact=target)
+                        .filter(tags__in=tags_selected)
+                        .annotate(Count('tags'))
+                        .order_by('-dt_public', 'title')
+                        .all())
         case _:
             return render(request, "my_news/custom_404.html", {'exception': "страница не найдена"})
+
+    context['articles'] = articles
+    context['tags_list'] = tags_list
+    context['tags_selected'] = tags_selected
+    context['authors_selected'] = authors_selected
     return render(request, "my_news/publication.html", context)
 
 
 def article(request, article_id, mode):
-    alert = ""
-    if request.method == "POST":
-        print("POST")
-        title = request.POST.get('title')
-        text = request.POST.get('text')
-        date = request.POST.get('date')
-        if article_id > 0:
-            print('Создана статья!')
-            messages.success(request, f'Обновлена статья "{title}"! №{article_id}')
-        else:
-            messages.success(request, f'Создана статья! "{title}"')
-    else:
-        print("GET")
-
     context = {}
-    # БД
-    article1 = Article(1, "Новость 1", "Текст 1", "03.11.23", 1, "дом", 0)
-    article2 = Article(2, "Новость 2", "Текст 2", "04.11.23", 0, "работа", 0)
-    article3 = Article(3, "Новость 3", "Текст 3", "05.11.23", 0, "огород", 1)
-    article0 = Article(0, "", "", "", 0, "", 0)
-    arr_news = [article1, article2, article3]
-    if article_id not in list(map(lambda x: int(x.article_id), arr_news)):
-        context["article"] = article0
-    else:
-        context["article"] = list(filter(lambda el: el.article_id == article_id, arr_news))[0]
 
+    article = (MyArticle.objects
+               .select_related("author")
+               .prefetch_related('tags')
+               .annotate(Count('tags'))
+               .filter(id=article_id)
+               .first())
+    if article is None:
+        messages.error(request, "Статья не найдена!")
+        return redirect('publication', target='fresh')
+
+    context["article"] = article
     match mode:
         case 'view':
             print('view')
         case 'edit':
-            print('edit')
+            if request.method == "POST":
+                print("POST")
+                form = MyArticleForm(request.POST, instance=context["article"])
+                print(form.changed_data)
+                current_user = request.user
+                if current_user.id is not None:  # проверили что не аноним
+                    new_article = form.save()
+                    messages.success(request, f'Обновлена статья  №{article_id} - "{new_article.title}"!')
+                    context["article"] = (MyArticle.objects
+                                          .select_related("author")
+                                          .prefetch_related('tags')
+                                          .annotate(Count('tags'))
+                                          .get(id=new_article.id))
+                    return redirect('article', article_id=article_id, mode='view')
+                else:
+                    messages.error(request, "Не авторизованы")
+            else:
+                print('edit GET')
+                context["form"] = MyArticleForm(instance=context["article"])
         case _:
             return render(request, "my_news/custom_404.html", {'exception': "страница не найдена"})
-    print(list(map(lambda x: int(x.article_id), arr_news)))
-    print(context["article"])
+    print(context)
     return render(request, "my_news/article.html", context)
+
+
+@login_required(login_url="my_news")
+def create_my_article(request):
+    if request.method == 'POST':
+        form = MyArticleForm(request.POST)
+        if form.is_valid():
+            current_user = request.user
+            if current_user.id is not None:  # проверили что не аноним
+                new_article = form.save(commit=False)  # сохранение без коммита
+                new_article.category = get_category()  # рандомно устанавливаем категорию
+                new_article.save()  # сохраняем в БД
+                form.save_m2m()
+                messages.success(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
+                messages.success(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!")
+                if request.POST.get('saveAndNew') is not None:
+                    form = MyArticleForm()
+                else:
+                    return redirect(f'article/{new_article.id}/view')
+            else:
+                messages.error(request, "Не авторизованы")
+    else:
+        form = MyArticleForm()
+    return render(request, 'my_news/create_article.html', {'form': form})
 
 
 def profile(request):

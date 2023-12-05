@@ -16,6 +16,9 @@
                class="{% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a></li>
         <li><a href="{% url 'publication' target='fresh' %}"
                class="{% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a></li>
+        <li><a href="{% url 'create_my_article' %}"
+               class="{% if request.resolver_match.view_name == 'create_my_article' %}active{% endif %}">Создать новость</a>
+        </li>
         <li><a href="{% url 'publication' target='subscription' %}"
                class="{% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
         </li>
