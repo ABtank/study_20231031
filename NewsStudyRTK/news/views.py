@@ -5,10 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.db import connection, reset_queries
+from django.views.generic import DetailView, DeleteView, UpdateView
 from django.db.models import Count
 
 from .forms import ArticleForm
 from .models import *
+
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'news/news_detail.html'
+    context_object_name = 'article'
+
 
 
 def generate_random_list(input_list):
@@ -84,15 +92,6 @@ def news_list(request):
     context['selected'] = selected
 
     return render(request, "news/news.html", context)
-
-
-def detail(request, id):
-    context = {}
-    # article = Article.objects.filter(id=id).first()
-    article = Article.objects.get(id=id)
-    context['article'] = article
-
-    return HttpResponse(f'<h1>{article.title}</h1> <br> {article.text}')
 
 
 # человек не аутентифицирован - отправляем на страницу другую
