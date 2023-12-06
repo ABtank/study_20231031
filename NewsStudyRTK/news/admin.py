@@ -12,6 +12,7 @@ class ArticleAdmin(admin.ModelAdmin):
     list_display_links = ['id']
     list_editable = ['title', 'author']
     # readonly_fields = ['author']
+    # prepopulated_fields = {"slug": ('title',)}
 
 
 @admin.register(Tag)
