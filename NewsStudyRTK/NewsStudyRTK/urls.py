@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path,include
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -23,17 +23,18 @@ from django.conf.urls.static import static
 # import main.views as main_views
 # handler404 = main_views.custom_404
 import my_news.views as my_news_views
+
 handler404 = my_news_views.custom_404
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('main.urls')),
-    path('shop/', include('shop.urls')),
-    path('my_journal/', include('my_journal.urls')),
-    path('my_news/', include('my_news.urls')),
-    path('news/', include('news.urls')),
-    path('users/', include('users.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path('admin/', admin.site.urls),
+                  path('', include('main.urls')),
+                  path('shop/', include('shop.urls')),
+                  path('my_journal/', include('my_journal.urls')),
+                  path('my_news/', include('my_news.urls')),
+                  path('news/', include('news.urls')),
+                  path('users/', include('users.urls')),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     import debug_toolbar
@@ -43,3 +44,6 @@ if settings.DEBUG:
                   ] + urlpatterns
 
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+admin.site.site_header = "Панель администрирования этим проектом"
+admin.site.index_title = "Подзаголовок второго уровня этого проекта"

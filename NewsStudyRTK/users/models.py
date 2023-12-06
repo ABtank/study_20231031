@@ -16,5 +16,10 @@ class Account(models.Model):
     account_image = models.ImageField(default='default.jpg',
                                       upload_to='account_images')
 
+    class Meta:
+        ordering = ['user']
+        verbose_name = "Профиль"
+        verbose_name_plural = "Профили"
+
     def __str__(self):
         return f"{self.user.username}'s account"
