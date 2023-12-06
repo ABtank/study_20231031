@@ -39,6 +39,10 @@ class Article(models.Model):
     category = models.CharField(choices=categories, max_length=20, verbose_name="Категории")
 
     tags = models.ManyToManyField(to=Tag, blank=True, verbose_name="Теги")
+
+    # уникальное поле для ссылок вместо id
+    # slug = models.SlugField()
+
     # общие методы
     objects = models.Manager()
     # свой фильтр

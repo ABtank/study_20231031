@@ -7,9 +7,9 @@ from .models import *
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     ordering = ['-dt_public', 'title', 'author']
-    list_display = ['title', 'author', 'dt_public']
+    list_display = ['id', 'title', 'author', 'dt_public']
     list_filter = ['tags', 'author', 'dt_public']
-    list_display_links = ['dt_public']
+    list_display_links = ['id']
     list_editable = ['title', 'author']
     # readonly_fields = ['author']
 
