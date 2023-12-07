@@ -24,6 +24,8 @@ class ArticleAdmin(admin.ModelAdmin):
     # prepopulated_fields = {"slug": ('title',)}
     list_per_page = 10
     inlines = [ArticleImageInline, ]
+    # __icontains функция поиска без учета регистра
+    search_fields = ['title__icontains', 'tags__title__icontains']
 
     @admin.display(description="Длинна", ordering='_text_symbols')
     def symbols_count(self, article: Article):
