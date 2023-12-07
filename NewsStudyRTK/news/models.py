@@ -5,12 +5,23 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 
 
+
+
 class Tag(models.Model):
     title = models.CharField(max_length=80)
     status = models.BooleanField(default=True)
 
     def __str__(self):
         return f"title = {self.title} status = {self.status}"
+
+    def tag_count(self):
+        count = self.article_set.count()
+        #комментарий: когда мы работаем со связанными объектами (foreign_key, m2m, один к одному),
+        #мы можем обращаться к связанным таблицам при помощи синтаксиса:
+        #связаннаяМодель_set и что-то делать с результатами. В этом примере - мы используем связанные article
+        #и вызываем метод count
+        # пользовать Tag.tag_count(Tag.objects.all().first())
+        return count
 
     # метаданные модели
     class Meta:
@@ -56,6 +67,14 @@ class Article(models.Model):
     def get_absolute_url(self):
         return f"/news/show/{self.pk}"
 
+    def image_tag(self):
+        images = Image.objects.filter(article=self)
+        print(images)
+        if images:
+            return mark_safe(Image.image_tag(images[0]))
+        else:
+            return '(not image)'
+
     # метаданные модели
     class Meta:
         ordering = ['-dt_public', 'title']
@@ -66,7 +85,7 @@ class Article(models.Model):
 class Image(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     title = models.CharField(max_length=50, blank=True)
-    image = models.ImageField(upload_to='article_image/')
+    image = models.ImageField(upload_to=f'article_image/')
 
     def __str__(self):
         return self.title

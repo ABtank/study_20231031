@@ -6,16 +6,24 @@ from django.db.models.functions import Length
 from .models import *
 
 
+# class ArticleImageInline(admin.StackedInline):
+class ArticleImageInline(admin.TabularInline):
+    model = Image
+    extra = 3
+    readonly_fields = ('id', 'image_tag')
+
+
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
     ordering = ['-dt_public', 'title', 'author']
-    list_display = ['id', 'title', 'symbols_count', 'author', 'dt_public']
+    list_display = ['id', 'title', 'symbols_count', 'author', 'dt_public', 'image_tag']
     list_filter = ['tags', 'author', 'category', 'dt_public']
     list_display_links = ['id']
     list_editable = ['title', 'author']
     # readonly_fields = ['author']
     # prepopulated_fields = {"slug": ('title',)}
     list_per_page = 10
+    inlines = [ArticleImageInline, ]
 
     @admin.display(description="Длинна", ordering='_text_symbols')
     def symbols_count(self, article: Article):
