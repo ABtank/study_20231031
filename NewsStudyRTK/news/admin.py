@@ -40,10 +40,23 @@ class ArticleAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ['title', 'status', 'tag_count']
     list_filter = ['title', 'status']
+    actions = ['set_false', 'set_true']
 
     @admin.display(description="Новостей", ordering='tag_count')
     def tag_count(self, object):
         return f"Новостей {object.tag_count}"
+
+    # действия
+    @admin.action(description="Активировать выбранные теги")
+    def set_true(self, request, queryset):
+        amount = queryset.update(status=True)
+        self.message_user(request, f"Активировано {amount} тегов")
+
+    # действие
+    @admin.action(description="ДЕактивировать выбранные теги")
+    def set_false(self, request, queryset):
+        amount = queryset.update(status=False)
+        self.message_user(request, f"ДЕактивировано {amount} тегов")
 
     # сортировка по symbols_count
     def get_queryset(self, request):
