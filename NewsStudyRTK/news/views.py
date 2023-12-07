@@ -110,7 +110,7 @@ def news_list(request):
 @login_required(login_url="news_list")
 def create_article(request):
     if request.method == 'POST':
-        form = ArticleForm(request.POST)
+        form = ArticleForm(request.POST, request.FILES)
         if form.is_valid():
             current_user = request.user
             if current_user.id is not None:  # проверили что не аноним
@@ -118,6 +118,8 @@ def create_article(request):
                 new_article.author = current_user
                 new_article.save()  # сохраняем в БД
                 form.save_m2m()
+                for img in request.FILES.getlist('image_field'):
+                    Image.objects.create(article=new_article, image=img, title=img.name)
                 messages.success(request, f"Создана новая запись {new_article.title}")
                 if request.POST.get('saveAndNew') is not None:
                     form = ArticleForm()
