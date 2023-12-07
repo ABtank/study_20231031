@@ -30,6 +30,13 @@ class ArticleDeleteView(DeleteView):
     success_url = reverse_lazy('news_list')
     template_name = 'news/delete_article.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_object = self.object
+        images = Image.objects.filter(article=current_object)
+        context['images'] = images
+        return context
+
 
 def generate_random_list(input_list):
     random_length = random.randint(0, len(input_list))
