@@ -47,3 +47,4 @@ if settings.DEBUG:
 
 admin.site.site_header = "Панель администрирования этим проектом"
 admin.site.index_title = "Подзаголовок второго уровня этого проекта"
+admin.site.index_template = "main/custom_admin.html"
