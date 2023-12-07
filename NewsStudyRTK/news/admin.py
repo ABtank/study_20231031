@@ -6,6 +6,26 @@ from django.db.models.functions import Length
 from .models import *
 
 
+class ArticleFilter(admin.SimpleListFilter):
+    title = 'Наш фильтр'
+    parameter_name = 'text'  # имя в урле
+
+    def lookups(self, request, model_admin):
+        return [
+            ('S', "Короткие, <100 зн."),
+            ('M', "Средние, 100 - 500 зн."),
+            ('L', "Длинные, >500 зн."),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'S':
+            return queryset.annotate(teext_len=Length('text')).filter(teext_len__lt=100)
+        elif self.value() == 'M':
+            return queryset.annotate(teext_len=Length('text')).filter(teext_len__lt=500, teext_len__gte=100)
+        elif self.value() == 'L':
+            return queryset.annotate(teext_len=Length('text')).filter(teext_len__gte=500)
+
+
 # class ArticleImageInline(admin.StackedInline):
 class ArticleImageInline(admin.TabularInline):
     model = Image
@@ -17,7 +37,7 @@ class ArticleImageInline(admin.TabularInline):
 class ArticleAdmin(admin.ModelAdmin):
     ordering = ['-dt_public', 'title', 'author']
     list_display = ['id', 'title', 'symbols_count', 'author', 'dt_public', 'image_tag']
-    list_filter = ['tags', 'author', 'category', 'dt_public']
+    list_filter = ['tags', 'author', 'category', 'dt_public',ArticleFilter]
     list_display_links = ['id']
     list_editable = ['title', 'author']
     # readonly_fields = ['author']
@@ -26,6 +46,7 @@ class ArticleAdmin(admin.ModelAdmin):
     inlines = [ArticleImageInline, ]
     # __icontains функция поиска без учета регистра
     search_fields = ['title__icontains', 'tags__title__icontains']
+    filter_horizontal = ['tags']
 
     @admin.display(description="Длинна", ordering='_text_symbols')
     def symbols_count(self, article: Article):
