@@ -42,3 +42,9 @@ class TagAdmin(admin.ModelAdmin):
         queryset = super().get_queryset(request)
         queryset = queryset.annotate(tag_count=Count('article'))
         return queryset
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ['title', 'image_tag']
+    list_filter = ['title']
