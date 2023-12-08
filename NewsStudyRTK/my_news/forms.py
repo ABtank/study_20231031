@@ -8,9 +8,8 @@ from .models import MyArticle
 class MyArticleForm(ModelForm):
     class Meta:
         model = MyArticle
-        fields = ['title', 'anouncement', 'text', 'tags', 'author']
+        fields = ['title', 'anouncement', 'text', 'tags']
         widgets = {
-            'author': Select(),
             'anouncement': Textarea(attrs={'cols': 80, 'rows': 2}),
             'text': Textarea(attrs={'cols': 80, 'rows': 5}),
             'tags': SelectMultiple(),

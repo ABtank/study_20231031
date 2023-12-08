@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 
@@ -21,13 +22,13 @@ def random_article(target):
     random_tags = MyTag.objects.filter(id__in=random_tag_ids)
     category = ['hot', 'fresh', 'subscription']
     random_number = random.randint(0, len(category) - 1)
-    len_text = random.randint(50, 100)
+    len_text = random.randint(100, 500)
     numb = MyArticle.objects.count() + 1
     authors = User.objects.all()
     num_acc = random.randint(0, len(authors) - 1)
     author = authors[num_acc]
     article = MyArticle(author=author, title=f"title-{target} {numb}",
-                        anouncement=f"Анонс-{target} {numb}" * (len_text // 5),
+                        anouncement=(f"Анонс-{target} {numb}" * (len_text // 5))[:250],
                         text=f"{target} {numb} " * len_text,
                         category=target)
     article.save()
@@ -79,12 +80,16 @@ def publication(request, target):
                         .prefetch_related('tags')
                         .annotate(Count('tags'))
                         .filter(filters)
-                        .order_by('-dt_public', 'title')
+                        .order_by('-id')
                         .all())
         case _:
             return render(request, "my_news/custom_404.html", {'exception': "страница не найдена"})
 
-    context['articles'] = articles
+    paginator = Paginator(articles, 10)  # здесь 10 - это количество элементов на одну страницу
+    page_number = request.GET.get('page')  # номер страницы, полученный из запроса
+    page_articles = paginator.get_page(page_number)
+
+    context['articles'] = page_articles
     context['tags_list'] = tags_list
     context['tags_selected'] = tags_selected
     context['authors_selected'] = authors_selected
@@ -116,7 +121,7 @@ def article(request, article_id, mode):
                 current_user = request.user
                 if current_user.id is not None:  # проверили что не аноним
                     new_article = form.save()
-                    messages.success(request, f'Обновлена статья  №{article_id} - "{new_article.title}"!')
+                    messages.info(request, f'Обновлена статья  №{article_id} - "{new_article.title}"!')
                     context["article"] = (MyArticle.objects
                                           .select_related("author")
                                           .prefetch_related('tags')
@@ -145,8 +150,8 @@ def create_my_article(request):
                 new_article.category = get_category()  # рандомно устанавливаем категорию
                 new_article.save()  # сохраняем в БД
                 form.save_m2m()
-                messages.success(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
-                messages.success(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!")
+                messages.info(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
+                messages.info(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!",'primary')
                 if request.POST.get('saveAndNew') is not None:
                     form = MyArticleForm()
                 else:
@@ -161,7 +166,7 @@ def create_my_article(request):
 def profile(request):
     context = {}
     if request.method == "POST":
-        messages.success(request, f'Обновили типа данные! {request.POST.get("username")}')
+        messages.info(request, f'Обновили типа данные! {request.POST.get("username")}')
     else:
         print("GET")
     return render(request, "my_news/profile.html", context)
