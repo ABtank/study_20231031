@@ -1,5 +1,6 @@
 ﻿import random
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -114,7 +115,8 @@ def news_list(request):
 
 
 # человек не аутентифицирован - отправляем на страницу другую
-@login_required(login_url="news_list")
+# @login_required(login_url="news_list")
+@login_required(login_url=settings.LOGOUT_REDIRECT_URL)
 def create_article(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST, request.FILES)

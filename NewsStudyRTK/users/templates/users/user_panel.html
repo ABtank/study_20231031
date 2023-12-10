@@ -2,6 +2,7 @@
 {% load static %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load bootstrap_icons %}
 <link rel="stylesheet" href="{% static 'news/css/style.css' %}">
 <script src="https://kit.fontawesome.com/a97047fead.js" crossorigin="anonymous"></script>
 <meta charset="utf-8">
@@ -33,6 +34,12 @@
                 <div class="d-none d-lg-block">В MAIN</div>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="/admin/" aria-current="page">
+                <i class="fa fa-user menu-icon {% if request.path  == '/admin/' %} link-active {% endif %}"></i>
+                <div class="d-none d-lg-block">Админка</div>
+            </a>
+        </li>
 
         <li class="nav-item">
             <a href="{% url 'news_index' %}" {% if request.resolver_match.view_name == 'news_index' %}
@@ -41,33 +48,15 @@
                 <div class="d-none d-lg-block">Главная</div>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{% url 'news_list' %}" {% if request.resolver_match.view_name == 'news_list' %}
-               class="link-active" aria-current="page" {% endif %}>
-                <i class="fa fa-bars menu-icon"></i>
-                <div class="d-none d-lg-block">Все новости</div>
+
+        <li class="nav-item border-top">
+            <a href="{% url 'profile' %}" {% if request.resolver_match.view_name  == 'news' %} class="link-active"
+               aria-current="page" {% endif %}>
+                <i class="fa fa-gear menu-icon"></i>
+                <div class="d-none d-lg-block">Мой профиль</div>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="{% url 'contact_page' %}" {% if request.resolver_match.view_name == 'contact_page' %}
-               class="link-active" aria-current="page" {% endif %}>
-                <i class="fa fa-bars menu-icon"></i>
-                <div class="d-none d-lg-block">Страница обратной связи</div>
-            </a>
-        </li>
-        <li class="nav-item">
-            <a href="{% url 'create_article' %}" {% if request.resolver_match.view_name == 'create_article' %}
-               class="link-active" aria-current="page" {% endif %}>
-                <i class="fa fa-bars menu-icon"></i>
-                <div class="d-none d-lg-block">Создание новости</div>
-            </a>
-        </li>
-        <li>
-            <a href="#" {% if request.path  == '/search/' %} class="link-active" aria-current="page" {% endif %}>
-                <i class="fa fa-magnifying-glass menu-icon"></i>
-                <div class="d-none d-lg-block"> Поиск</div>
-            </a>
-        </li>
+
         <li>
             <a href="#" {% if request.path  == '/myarticles/' %} class="link-active" aria-current="page" {% endif %}>
                 <i class="fa fa-pen-nib menu-icon"></i>

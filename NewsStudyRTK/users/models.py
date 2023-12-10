@@ -16,6 +16,12 @@ class Account(models.Model):
     account_image = models.ImageField(default='default.jpg',
                                       upload_to='account_images')
 
+    address = models.CharField(max_length=100, null=True)
+    vk = models.CharField(max_length=100, null=True)
+    instagram = models.CharField(max_length=100, null=True)
+    telegram = models.CharField(max_length=100, null=True)
+    phone = models.CharField(max_length=20, null=True)
+
     class Meta:
         ordering = ['user']
         verbose_name = "Профиль"
