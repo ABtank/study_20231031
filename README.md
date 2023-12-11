@@ -56,3 +56,48 @@ python NewsStudyRTK/manage.py runserver --insecure
 5) [x] Шаблон для навигации верхняя и боковая панель
 6) [x] Шаблон 404
 7) [x] Шаблон логина
+
+
+## Администрирование
+1) инициализация БД
+```
+python .\NewsStudyRTK\manage.py migrate
+```
+2) создание пользователя
+```
+python .\NewsStudyRTK\manage.py createsuperuser
+```
+
+## Миграциии
+1) подготовка к обновлению
+```
+python .\NewsStudyRTK\manage.py makemigrations
+```
+2) обновление БД
+```
+python .\NewsStudyRTK\manage.py migrate
+```
+3) работа с картинками (Pillow)
+```
+pip install Pillow
+```
+4) работа с БД из консоли с ORM
+``` 
+python .\NewsStudyRTK\manage.py shell 
+```
+
+5) django-debug-toolbar
+```
+python -m pip install django-debug-toolbar
+```
+
+
+### Формы
+1) crispy
+```
+python -m pip install django-crispy-forms
+ ```
+2) crispy-bootstrap5
+```
+python -m pip install crispy-bootstrap5
+ ```

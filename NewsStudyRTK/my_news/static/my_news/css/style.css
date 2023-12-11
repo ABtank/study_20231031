@@ -59,7 +59,6 @@ html {
 }
 
 #wrapper.toggled #page-content-wrapper {
-    position: absolute;
     margin-right: -220px;
 }
 

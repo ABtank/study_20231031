@@ -12,7 +12,8 @@
     <script src="{% static 'my_news/' %}assets/js/sidebar.js"></script>
     <!-- Bootstrap -->
     <link type="text/css" rel="stylesheet" href="{% static 'my_news/' %}assets/dist/css/bootstrap.min.css"/>
-    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link type="text/css" rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Font Awesome Icon -->
     <!--    <link rel="stylesheet" href="{% static 'my_news/' %}css/font-awesome.min.css">-->
 
@@ -28,14 +29,14 @@
 
 <!-- HEADER -->
 {% block header %}
-{% include 'my_news/header.html' %}
+    {% include 'my_news/header.html' %}
 {% endblock %}
 <!-- /HEADER -->
 <div id="wrapper">
     <div class="overlay"></div>
     <!-- SIDEBAR -->
     {% block sidebar %}
-    {% include 'my_news/sidebar.html' %}
+        {% include 'my_news/sidebar.html' %}
     {% endblock %}
     <!-- /SIDEBAR -->
     <!-- BODY -->
@@ -45,16 +46,23 @@
             <span class="hamb-middle"></span>
             <span class="hamb-bottom"></span>
         </button>
-        <div class="container">
+        <div class="container-fluid mx-5">
             {% if messages %}
-            <div class="row">
-                {% for message in messages %}
-                <p class="lead my-6 text-center alert alert-info {% if message.tags %} {{ message.tags }}{% endif %}"> {{ message }} </p>
-                {% endfor %}
-            </div>
+                <div class="container">
+                    <div class="row me-5">
+                        {% for message in messages %}
+                            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}
+                                alert-dismissible fade show " role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             {% endif %}
             {% block body %}
-            {% include 'my_news/body.html' %}
+                {% include 'my_news/body.html' %}
             {% endblock %}
         </div>
     </div>
@@ -62,7 +70,7 @@
 <!-- /BODY -->
 <!-- FOOTER -->
 {% block footer %}
-{% include 'my_news/footer.html' %}
+    {% include 'my_news/footer.html' %}
 {% endblock %}
 <!-- /FOOTER -->
 

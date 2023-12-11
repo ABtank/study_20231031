@@ -29,16 +29,37 @@
     <ul class="nav nav-pills flex-column mb-auto">
         <li class="nav-item">
             <a href="{% url 'home' %}" {% if request.path == '/' %} class="link-active" aria-current="page" {% endif %}>
-                <i class="fa fa-house menu-icon {% if request.path  == '/' %} link-active {% endif %}"></i>
-                <div class="d-none d-lg-block">Главная</div>
+                <i class="fa fa-house menu-icon"></i>
+                <div class="d-none d-lg-block">В MAIN</div>
             </a>
         </li>
 
         <li class="nav-item">
             <a href="{% url 'news_index' %}" {% if request.resolver_match.view_name == 'news_index' %}
                class="link-active" aria-current="page" {% endif %}>
+                <i class="fa fa-house menu-icon"></i>
+                <div class="d-none d-lg-block">Главная</div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'news_list' %}" {% if request.resolver_match.view_name == 'news_list' %}
+               class="link-active" aria-current="page" {% endif %}>
                 <i class="fa fa-bars menu-icon"></i>
                 <div class="d-none d-lg-block">Все новости</div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'contact_page' %}" {% if request.resolver_match.view_name == 'contact_page' %}
+               class="link-active" aria-current="page" {% endif %}>
+                <i class="fa fa-bars menu-icon"></i>
+                <div class="d-none d-lg-block">Страница обратной связи</div>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'create_article' %}" {% if request.resolver_match.view_name == 'create_article' %}
+               class="link-active" aria-current="page" {% endif %}>
+                <i class="fa fa-bars menu-icon"></i>
+                <div class="d-none d-lg-block">Создание новости</div>
             </a>
         </li>
         <li>
@@ -63,20 +84,41 @@
     <hr>
 
 
-    <div class="dropdown">
-        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                aria-expanded="false" style="background:#212529;">
-            <img src="{% static 'news' %}/img/default.jpg" alt="" width="25" height="25" class="rounded-circle me-2">
-            <div class="d-none d-lg-block">Демо-пользователь</div>
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-            <li><a class="dropdown-item" href="#"> Создать статью</a></li>
-            <li><a class="dropdown-item" href="#"> Мой аккаунт</a></li>
-            <li>
-                <hr class="dropdown-divider">
+    {% if request.user.id %}  <!-- проверяем аутентификацию-->
+        <div class="dropdown flex-column mb-auto">
+            <button class="btn btn-primary dropdown-toggle col-12" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false" style="background:#212529;">
+                <img src="{{ request.user.account.account_image.url }}" alt="" width="25" height="25"
+                     class="rounded-circle me-2">
+                <div class="d-none d-lg-block ">({{ request.user.id }}) {{ request.user.username }} </div>
+            </button>
+            <ul class="dropdown-menu " aria-labelledby="dropdownMenuButton1">
+                <li><a class="dropdown-item" href="{% url 'create_article' %}"> Создать статью</a></li>
+                <li><a class="dropdown-item" href="{% url 'profile' %}"> Мой аккаунт</a></li>
+                <li>
+                    <hr class="dropdown-divider">
+                </li>
+                <li><a class="dropdown-item" href="{% url 'logout' %}"> Выход</a></li>
+            </ul>
+        </div> <!-- выпадающее меню-->
+    {% else %} <!-- ссылки на регистрацию и аутентификацию-->
+        <ul class="nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="{% url 'registration' %}" {% if request.resolver_match.view_name  == 'registration' %}
+                   class="link-active" aria-current="page" {% endif %}>
+                    <i class="fa fa-user menu-icon"></i>
+                    <div class="d-none d-lg-block">Регистрация</div>
+                </a>
             </li>
-            <li><a class="dropdown-item" href="#"> Выход</a></li>
+            <li class="nav-item">
+                <a href="{% url 'login' %}" {% if request.resolver_match.view_name  == 'login' %}
+                   class="link-active" aria-current="page" {% endif %}>
+                    <i class="fa fa-sign menu-icon {% if request.path  == '/users/login' %}
+                               link-active {% endif %}"></i>
+                    <div class="d-none d-lg-block">Вход</div>
+                </a>
+            </li>
         </ul>
-    </div>
+    {% endif %}
 
 </aside>

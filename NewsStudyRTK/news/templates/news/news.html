@@ -4,11 +4,51 @@
 {% block title %} Главная страница {% endblock %}
 
 {% block content %}
-        <div class="row">
-            <div class="text-center" style="margin-top:30px;">
-                    <h1 >Тут будет список с новостями</h1>
-            </div>
-
-
+    <div class="row">
+        <div class="text-center" style="margin-top:30px;">
+            <h1>Список с новостями</h1>
         </div>
+        <div class="content_center">
+            <h1> Фильтр по автору: </h1>
+            <div class="form-group col-8">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group">
+                         <select class="form-select" name="author_filter" style="width:40%">
+                              <option value="0">Все авторы</option>
+                              {% for author in author_list %}
+                                  <option value="{{ author.id }}" {% if selected == author.id %} selected {% endif %}> {{ author.username }} ({{ author.article__count }})</option>
+                              {% endfor %}
+                         </select>
+                         <span class="input-group-btn">
+                             <input type="submit" class="btn btn-success" value="Применить" style="margin: 0 15px">
+                         </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% for article in articles %}
+            <div class="single_news">
+                <div class="p-4 p-md-5 text-white rounded bg-dark">
+                    <div class="col-md-12 px-0">
+                        <h1 class="display-4 fst-italic"> {{ article.title }}</h1>
+                        <p class="lead my-3">{{ article.anouncement }}</p>
+                        <p class="lead my-3">{{ article.text }}</p>
+                        <p class="lead mb-0"><a href="{{ article.get_absolute_url }}" class="text-white fw-bold">Полный
+                            текст...</a></p>
+                        <p class="lead my-3"><b>({{ article.tags__count }})</b>
+                            {% for tag in article.tags.all %}
+                                <small>{{ tag.title }}</small>
+                            {% endfor %}
+                        </p>
+                        <p class="lead my-3"><u>{{ article.category }}</u></p>
+                        <p class="lead my-3"><i>{{ article.author.username }}</i></p>
+                        <a href="{% url 'news_delete' article.pk %}" class="btn btn-warning" >Удалить</a>
+                        <a href="{% url 'news_update' article.pk %}" class="btn btn-primary" >Редактировать</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

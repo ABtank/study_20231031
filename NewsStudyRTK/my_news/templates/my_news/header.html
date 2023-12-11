@@ -20,11 +20,11 @@
 
         </a>
         <ul class="dropdown-menu text-small" >
-            <li><a class="dropdown-item {% if request.resolver_match.view_name  == 'profile' %}active{% endif %}" href="{% url 'profile' %}">Profile</a></li>
+            <li><a class="dropdown-item {% if request.resolver_match.view_name  == 'my_profile' %}active{% endif %}" href="{% url 'my_profile' %}">{% if request.user.id %}({{ request.user.id }}) {{ request.user.username }}{% else %}Profile{% endif %}</a></li>
             <li>
                 <hr class="dropdown-divider">
             </li>
-            <li><a class="dropdown-item" href="{% url 'signIn' %}">Sign out</a></li>
+            <li><a class="dropdown-item" href="{% url 'sign_out' %}">Sign out</a></li>
         </ul>
     </div>
 </header>

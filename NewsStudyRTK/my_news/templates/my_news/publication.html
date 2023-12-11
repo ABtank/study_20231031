@@ -2,34 +2,125 @@
 {% load static %}
 
 {% block body %}
-<h1>{{target}}</h1>
-{% for i in '01234567891234567890'|make_list %}
-<strong><i>{{ forloop.counter }}</i></strong>
-<ul class="list-group list-group-flush">
-    <li class="list-group-item">
-        <div class="p-4 p-md-5 mb-4 rounded text-body-emphasis bg-body-secondary">
-            <div class="col-lg-12 px-0">
-                <h1 class="display-4 fst-italic">{{article.title|default:''}}</h1>
-                <p class="lead my-3">{{article.text|default:''}}</p>
-                <p class="lead my-3">{% lorem 1 p %}</p>
-                <p class="lead mb-0">
-                    <a href="{% url 'article' article_id=article.article_id mode='view' %}"
-                                        class="text-body-emphasis fw-bold">Перейти к статье...</a>
-                </p>
-            </div>
-            <div class="col-lg-12 px-0">
-                <div class="row justify-content-end">
-                    <div class="col-md-2">
-                        <a href="{% url 'article' article_id=article.article_id mode='edit' %}"
-                           class="btn btn-sm btn-primary ">Редактировать свою статью</a>
+    <h1>{{ target }}</h1>
+    <div class="row me-5">
+        <div class="col-md-9 col-lg-9">
+            {% for article in articles %}
+                <div class="p-4 p-md-5 rounded">
+                    <div class="col-md-12 px-0">
+                        <h1 class="display-4 fst-italic"> {{ article.title }}
+                            {% if request.user.id  == article.author.id %}
+                                <a href="{% url 'article' article_id=article.id mode='edit' %}"
+                                   class="btn btn-outline-primary rounded-pill">Редактировать свою
+                                    статью</a>
+                            {% endif %}
+                        </h1>
+                        <p class="lead">{{ article.anouncement }}....</p>
+                        <p class="lead mt-1"><a
+                                href="{% url 'article' article_id=article.id mode='view' %}"
+                                class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill">Перейти к
+                            статье...</a></p>
+                        <p class="lead my-3"><b>Теги ({{ article.tags__count }}): </b>
+                            {% for tag in article.tags.all %}
+                                <u class="ms-2"><small>{{ tag.title }}</small></u>
+                            {% endfor %}
+                        </p>
+                        <p class="lead my-3"><b>Категория: </b><u>{{ article.category }}</u>
+                            <b class="ms-5">Автор: </b><i>{{ article.author.username }}</i></p>
                     </div>
+
                 </div>
-                </div>
+            {% endfor %}
+            <!-- Создание ссылок на другие страницы -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination  justify-content-center">
+                    {% if articles.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?">в начало</a></li>
+                    {% endif %}
+                    <li class="page-item {% if not articles.has_previous %}disabled{% endif %}">
+                        <a class="page-link"
+                                {% if articles.has_previous %} href="?page={{ articles.previous_page_number }}"
+                                {% endif %}>Previous</a>
+                    </li>
+                    {% if articles.number|add:"-3" > 0 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ articles.number|add:"-3" }}">
+                                {{ articles.number|add:"-3" }}</a>
+                        </li>
+                    {% endif %}
+                    {% if articles.number|add:"-2" > 0 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ articles.number|add:"-2" }}">
+                                {{ articles.number|add:"-2" }}</a>
+                        </li>
+                    {% endif %}
+                    {% if articles.number|add:"-1" > 0 %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ articles.number|add:"-1" }}">
+                                {{ articles.number|add:"-1" }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ articles.number }}</a></li>
+                    {% if articles.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ articles.number|add:"1" }}">
+                                {{ articles.number|add:"1" }}</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item {% if not articles.has_next %}disabled{% endif %}">
+                        <a class="page-link"
+                            {% if articles.has_next %} href="?page={{ articles.next_page_number }}"
+                            {% endif %} >Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-    </li>
-</ul>
-{% endfor %}
-<nav class="blog-pagination py-1" aria-label="Pagination">
-    <a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
-</nav>
+        <div class="col-md-3 col-lg-3">
+            <div class="position-sticky" style="top: 2rem; max-height: 1200px; overflow: auto;">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Теги</h4>
+                        <div class="input-group">
+                            <select class="form-select" name="tags_filter" style="width:40%" multiple>
+                                <option value=""></option>
+                                {% for tag in tags_list %}
+                                    <option value="{{ tag.id }}"
+                                            {% if tag.id in tags_selected %}
+                                            selected {% endif %}>
+                                        {{ tag.title }} ({{ tag.num_articles }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Авторы</h4>
+                        <div class="input-group">
+                            <select class="form-select" name="authors_filter" style="width:40%" multiple>
+                                <option value=""></option>
+                                {% for author in authors_list %}
+                                    <option value="{{ author.id }}"
+                                            {% if author.id in authors_selected %}
+                                            selected {% endif %}>
+                                        {{ author.username }} ({{ author.myarticle__count }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group-btn p-2">
+                        <input type="submit" class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill"
+                               value="Фильтр">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div class="blog-pagination py-1" aria-label="Pagination">
+        <a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
+    </div>
+
 {% endblock %}

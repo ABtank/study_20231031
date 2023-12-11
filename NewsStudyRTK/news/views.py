@@ -1,9 +1,141 @@
-﻿from django.shortcuts import render
+﻿import random
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.db import connection, reset_queries
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, DeleteView, UpdateView
+from django.db.models import Count
+
+from .forms import ArticleForm
+from .models import *
+
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'news/news_detail.html'
+    context_object_name = 'article'
+
+
+class ArticleUpdateView(UpdateView):
+    model = Article
+    template_name = 'news/create_article.html'
+    fields = ['title', 'anouncement', 'text', 'tags', 'category']
+
+
+class ArticleDeleteView(DeleteView):
+    model = Article
+    success_url = reverse_lazy('news_list')
+    template_name = 'news/delete_article.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_object = self.object
+        images = Image.objects.filter(article=current_object)
+        context['images'] = images
+        return context
+
+
+def generate_random_list(input_list):
+    random_length = random.randint(0, len(input_list))
+    random_items = random.sample(input_list, random_length)
+    return random_items
+
+
+def random_article():
+    list_tags = Tag.objects.all().values_list('id', flat=True)
+    random_tag_ids = generate_random_list(list(list_tags))
+    random_tags = Tag.objects.filter(id__in=random_tag_ids)
+    category = ["E", "S", "IT", "F"]
+    random_number = random.randint(0, len(category) - 1)
+    len_text = random.randint(5, 100)
+    numb = Article.objects.count() + 1
+    authors = User.objects.all()
+    num_acc = random.randint(0, len(authors) - 1)
+    author = authors[num_acc]
+    article = Article(author=author, title=f"title {numb}", anouncement=f"Анонс {numb}",
+                      text=f"text {numb} " * len_text,
+                      category=category[random_number])
+    article.save()
+    article.tags.set(random_tags)
+    article.save()
+    return article
 
 
 def index(request):
-    return render(request, "news/index.html")
+    context = {}
+    # article = Article.objects.all().first()
+    # articles_today = Article.publishedToday.all()
+    # print(articles_today)
+    # print(datetime.date.today())
+    # создание новости
+    article = random_article()
+    article = (Article.objects
+               .select_related("author")
+               .prefetch_related('tags')
+               .annotate(Count('tags'))
+               .get(id=article.id))
+    context['article'] = article
+    return render(request, "news/index.html", context)
 
 
-# def news(request):
-#     return render(request, "news/news.html")
+def news_list(request):
+    context = {}
+
+    author_list = User.objects.annotate(Count('article', distinct=True))
+    # for usr in author_list:
+    #     print(usr.id, usr.article__count)
+    selected = 0
+    if request.method == "POST":
+        print(request.POST)
+        selected = int(request.POST.get('author_filter'))
+        if selected == 0:
+            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
+                Count('tags')).order_by('-dt_public', 'title').all()
+        else:
+            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
+                Count('tags')).order_by('-dt_public', 'title').filter(author=selected)
+    else:
+        articles = (Article.objects
+                    .select_related("author")  # select_related - один ко многим
+                    .prefetch_related('tags')  # prefetch_related - многие ко многим
+                    .annotate(Count('tags'))  # аннотирование - добавляет колонку к запросу
+                    .order_by('-dt_public', 'title')  # сортировка начиная с самых новых
+                    .all())
+        print(articles)
+    print(connection.queries)
+    context['articles'] = articles
+    context['author_list'] = author_list
+    context['selected'] = selected
+
+    return render(request, "news/news.html", context)
+
+
+# человек не аутентифицирован - отправляем на страницу другую
+# @login_required(login_url="news_list")
+@login_required(login_url=settings.LOGOUT_REDIRECT_URL)
+def create_article(request):
+    if request.method == 'POST':
+        form = ArticleForm(request.POST, request.FILES)
+        if form.is_valid():
+            current_user = request.user
+            if current_user.id is not None:  # проверили что не аноним
+                new_article = form.save(commit=False)  # сохранение без коммита
+                new_article.author = current_user
+                new_article.save()  # сохраняем в БД
+                form.save_m2m()
+                for img in request.FILES.getlist('image_field'):
+                    Image.objects.create(article=new_article, image=img, title=img.name)
+                messages.success(request, f"Создана новая запись {new_article.title}")
+                if request.POST.get('saveAndNew') is not None:
+                    form = ArticleForm()
+                else:
+                    return redirect('news_list')
+            else:
+                messages.error(request, "Не авторизованы")
+    else:
+        form = ArticleForm()
+    return render(request, 'news/create_article.html', {'form': form})
