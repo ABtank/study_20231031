@@ -1,4 +1,5 @@
-﻿import random
+﻿import json
+import random
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, update_session_auth_hash
@@ -7,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from .forms import MyArticleForm
@@ -66,6 +68,7 @@ def publication(request, target):
     context['authors_list'] = authors_list
 
     # Фильтр
+    search = ''
     tags_selected = []
     authors_selected = []
     filters = Q()  # Создаем пустой объект Q
@@ -79,10 +82,18 @@ def publication(request, target):
                 filters &= Q(tags__in=tags_selected)
                 is_filtered = True
 
-            authors_selected = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
+            authors_selected = [int(author_id) for author_id in request.POST.getlist('authors_filter') if
+                                len(author_id) > 0]
             if len(authors_selected) > 0:
                 filters &= Q(author__in=authors_selected)
                 is_filtered = True
+            print('search_news', request.POST.get('search_news'))
+            search = request.POST.get('search_news')
+            if search is not None and len(search) > 0:
+                filters &= (Q(title__icontains=search) | Q(anouncement__icontains=search))
+                is_filtered = True
+            else:
+                search = ''
 
     match target:
         case 'hot' | 'fresh' | 'subscription':
@@ -105,6 +116,8 @@ def publication(request, target):
     context['tags_selected'] = tags_selected
     context['authors_selected'] = authors_selected
     context['is_filtered'] = is_filtered
+    context['search_news'] = search
+    context['articles_count'] = articles.count()
     return render(request, "my_news/publication.html", context)
 
 
@@ -212,6 +225,7 @@ def my_registration(request):
     context = {'form': form}
     return render(request, 'my_news/my_registration.html', context)
 
+
 @login_required(login_url="my_news")
 def my_profile(request):
     user = request.user
@@ -256,3 +270,17 @@ def password_update(request):
 def custom_404(request, exception):
     context = {'exception': exception}
     return render(request, "my_news/custom_404.html", context)
+
+
+def search_news(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        q = request.GET.get('term', '')
+        articles = MyArticle.objects.filter(title__icontains=q)
+        results = []
+        for a in articles:
+            results.append(a.title)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)

@@ -1,4 +1,5 @@
-﻿import random
+﻿import json
+import random
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,10 +9,25 @@ from django.shortcuts import render, redirect
 from django.db import connection, reset_queries
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, DeleteView, UpdateView
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from .forms import ArticleForm
 from .models import *
+
+
+# URL:    path('search_auto/', views.search_auto, name='search_auto'),
+def search_auto(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        q = request.GET.get('term', '')
+        articles = Article.objects.filter(title__icontains=q)
+        results = []
+        for a in articles:
+            results.append(a.title)
+        data = json.dumps(results)
+    else:
+        data = 'fail'
+    mimetype = 'application/json'
+    return HttpResponse(data, mimetype)
 
 
 class ArticleDetailView(DetailView):
@@ -89,15 +105,22 @@ def news_list(request):
     # for usr in author_list:
     #     print(usr.id, usr.article__count)
     selected = 0
+    search_input = ''
     if request.method == "POST":
+        filters = Q()  # Создаем пустой объект Q
         print(request.POST)
         selected = int(request.POST.get('author_filter'))
-        if selected == 0:
-            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
-                Count('tags')).order_by('-dt_public', 'title').all()
+        if selected > 0:
+            filters &= Q(author=selected)
+
+        search_input = request.POST.get('search_input')
+        if len(search_input) > 0:
+            filters &= Q(title__icontains=search_input)
         else:
-            articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
-                Count('tags')).order_by('-dt_public', 'title').filter(author=selected)
+            search_input = ''
+
+        articles = Article.objects.select_related("author").prefetch_related('tags').annotate(
+            Count('tags')).order_by('-dt_public', 'title').filter(filters)
     else:
         articles = (Article.objects
                     .select_related("author")  # select_related - один ко многим
@@ -105,11 +128,11 @@ def news_list(request):
                     .annotate(Count('tags'))  # аннотирование - добавляет колонку к запросу
                     .order_by('-dt_public', 'title')  # сортировка начиная с самых новых
                     .all())
-        print(articles)
     print(connection.queries)
     context['articles'] = articles
     context['author_list'] = author_list
     context['selected'] = selected
+    context['search_input'] = search_input
 
     return render(request, "news/news.html", context)
 

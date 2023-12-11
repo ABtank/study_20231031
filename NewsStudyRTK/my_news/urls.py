@@ -17,4 +17,5 @@ urlpatterns = [
         template_name='my_news/sign_in.html'), name='sign_in'),
     path('sign_out', auth_views.LogoutView.as_view(
         template_name='my_news/sign_out.html'), name='sign_out'),
+    path('search_news/', views.search_news, name='search_news'),
 ]
