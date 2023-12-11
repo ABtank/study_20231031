@@ -1,0 +1,44 @@
+﻿{% extends 'my_news/my_news_base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+<!-- HEADER -->
+{% block header %}
+{% endblock %}
+<!-- /HEADER -->
+
+<!-- SIDEBAR -->
+{% block sidebar %}
+{% endblock %}
+<!-- /SIDEBAR -->
+
+<!-- BODY -->
+{% block body %}
+    <div class="d-flex flex-column align-items-center me-5 bg-body-tertiary">
+
+        <form method="post" class="text-center w-25">
+            {% csrf_token %}
+            <span><img class="me-2" width="40" height="32" role="img" src="/static/my_news/assets/brand/MY_NEWS.png">MY_NEWS</span>
+            <h1 class="h3 mb-3 fw-normal">Давай логинься</h1>
+
+{#            <div class="form-floating p-1">#}
+{#                <input type="username" class="form-control" id="username" placeholder="username" value="{{ form.clear_data.username }}">#}
+{#                <label for="floatingInput">username</label>#}
+{#            </div>#}
+{#            <div class="form-floating p-1">#}
+{#                <input type="password" class="form-control" id="password" placeholder="Password" value="{{ form.clear_data.password }}">#}
+{#                <label for="floatingPassword">Password</label>#}
+{#            </div>#}
+            {{ form|crispy }}
+
+            <div class="form-floating p-4">
+                <button class="btn btn-primary w-100 py-2" type="submit">Войти</button>
+            </div>
+            <div class="form-floating p-5">
+                <small class="text-muted"> Нужен аккаунт?</small>
+                <a class="ml-2" href="{% url 'my_registration' %}">Зарегистрироваться</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+<!-- /BODY -->

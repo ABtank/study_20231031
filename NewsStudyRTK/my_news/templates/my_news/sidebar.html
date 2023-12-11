@@ -26,7 +26,7 @@
         class="{% if request.resolver_match.view_name  == 'profile' %}active{% endif %}">Profile</a></li>
         <li><a href="{% url 'info' %}"
          class="{% if request.resolver_match.view_name  == 'info' %}active{% endif %}">О компании</a></li>
-        <li><a href="{% url 'signIn' %}">Sign out</a></li>
+        <li><a href="{% url 'sign_in' %}">Sign out</a></li>
     </ul>
 
 </nav>

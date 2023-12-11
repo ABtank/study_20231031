@@ -1,13 +1,19 @@
 ﻿import random
 
 from django.contrib import messages
+from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
+from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.shortcuts import render, redirect
 
 from .forms import MyArticleForm
 from .models import MyTag, MyArticle, User
+from users.models import Account
+
+from users.forms import AccountUpdateForm, UserUpdateForm
 
 
 def generate_random_list(input_list):
@@ -151,7 +157,7 @@ def create_my_article(request):
                 new_article.save()  # сохраняем в БД
                 form.save_m2m()
                 messages.info(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
-                messages.info(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!",'primary')
+                messages.info(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!", 'primary')
                 if request.POST.get('saveAndNew') is not None:
                     form = MyArticleForm()
                 else:
@@ -177,9 +183,64 @@ def info(request):
     return render(request, "my_news/info.html", context)
 
 
-def signIn(request):
-    context = {}
-    return render(request, "my_news/sign-in.html", context)
+# def signIn(request):
+#     context = {}
+#     return render(request, "my_news/sign-in.html", context)
+
+def my_registration(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # появляется новый пользователь
+            group = Group.objects.get(name='Authors')
+            user.groups.add(group)
+
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
+
+            # !!!не аутентифицируется - нужно доделать
+            authenticate(username=username, password=password)
+            # создаем пустой аккаунт
+            acc = Account(user.id)
+            acc.save()
+            messages.success(request, f'{username} был зарегистрирован!','info')
+            # return redirect('my_profile')
+            return redirect('sing_in')
+    else:
+        form = UserCreationForm()
+    context = {'form': form}
+    return render(request, 'my_news/my_registration.html', context)
+
+
+def profile_update(request):
+    user = request.user
+    account = Account.objects.filter(user=user).first()
+    if account is None:
+        account = Account(user.id)
+        account.save()
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=user)
+        account_form = AccountUpdateForm(request.POST, request.FILES, instance=account)
+        if user_form.is_valid() and account_form.is_valid():
+            user_form.save()
+            account_form.save()
+            messages.info(request, "Профиль успешно обновлен")
+            return redirect('profile')
+    else:
+        context = {'account_form': AccountUpdateForm(instance=account),
+                   'user_form': UserUpdateForm(instance=user)}
+    return render(request, 'my_news/edit_profile.html', context)
+
+
+def password_update(request):
+    user = request.user
+    form = PasswordChangeForm(user, request.POST)
+    if request.method == 'POST':
+        if form.is_valid():
+            password_info = form.save()
+            update_session_auth_hash(request, password_info)
+            messages.success(request, 'Пароль успешно изменен')
+            return redirect('profile')
 
 
 def custom_404(request, exception):

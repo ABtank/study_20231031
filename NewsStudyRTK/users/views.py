@@ -17,7 +17,10 @@ def profile(request):
 
 def profile_update(request):
     user = request.user
-    account = Account.objects.get(user=user)
+    account = Account.objects.filter(user=user).first()
+    if account is None:
+        account = Account(user.id)
+        account.save()
     if request.method == "POST":
         user_form = UserUpdateForm(request.POST, instance=user)
         account_form = AccountUpdateForm(request.POST, request.FILES, instance=account)
@@ -83,6 +86,9 @@ def registration(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             authenticate(username=username, password=password)
+            # создаем пустой аккаунт
+            acc = Account(user.id)
+            acc.save()
             messages.success(request, f'{username} был зарегистрирован!')
             return redirect('news_list')
     else:
