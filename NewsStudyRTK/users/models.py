@@ -21,6 +21,10 @@ class Account(models.Model):
     instagram = models.CharField(max_length=100, null=True)
     telegram = models.CharField(max_length=100, null=True)
     phone = models.CharField(max_length=20, null=True)
+    first_name = models.CharField(max_length=40, null=True)
+    last_name = models.CharField(max_length=40, null=True)
+    is_all_agree = models.BooleanField(default=True)
+    is_all_inform = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['user']

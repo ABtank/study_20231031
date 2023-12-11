@@ -22,8 +22,8 @@
         <li><a href="{% url 'publication' target='subscription' %}"
                class="{% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
         </li>
-        <li><a href="{% url 'profile' %}"
-        class="{% if request.resolver_match.view_name  == 'profile' %}active{% endif %}">Profile</a></li>
+        <li><a href="{% url 'my_profile' %}"
+        class="{% if request.resolver_match.view_name  == 'my_profile' %}active{% endif %}">Profile</a></li>
         <li><a href="{% url 'info' %}"
          class="{% if request.resolver_match.view_name  == 'info' %}active{% endif %}">О компании</a></li>
         <li><a href="{% url 'sign_in' %}">Sign out</a></li>

@@ -24,6 +24,7 @@ def profile_update(request):
     if request.method == "POST":
         user_form = UserUpdateForm(request.POST, instance=user)
         account_form = AccountUpdateForm(request.POST, request.FILES, instance=account)
+        print('account_form.is_valid()', account_form.cleaned_data)
         if user_form.is_valid() and account_form.is_valid():
             user_form.save()
             account_form.save()

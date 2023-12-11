@@ -4,7 +4,7 @@ from django.core.validators import MinLengthValidator
 
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
-from django.forms import TextInput, EmailInput, FileInput, Select
+from django.forms import TextInput, EmailInput, FileInput, Select, CheckboxInput
 
 from .models import Account
 
@@ -27,9 +27,14 @@ class UserUpdateForm(UserChangeForm):
 class AccountUpdateForm(forms.ModelForm):
     class Meta:
         model = Account
-        fields = ['phone', 'address', 'vk', 'instagram', 'telegram', 'account_image']
+        fields = ['phone', 'address', 'vk', 'instagram', 'telegram', 'account_image',
+                  'first_name',
+                  'last_name',
+                  'is_all_agree',
+                  'is_all_inform',
+                  ]
         widgets = {'phone': TextInput({'class': 'textinput form-control',
-                                       'placeholder': 'phone number'}),
+                                       'placeholder': 'phone number', 'required': False}),
                    'address': TextInput({'class': 'textinput form-control',
                                          'placeholder': 'address'}),
                    'vk': TextInput({'class': 'textinput form-control',
@@ -39,7 +44,13 @@ class AccountUpdateForm(forms.ModelForm):
                    'telegram': TextInput({'class': 'textinput form-control',
                                           'placeholder': 'telegram'}),
                    'account_image': FileInput({'class': 'form-control',
-                                               'placeholder': 'image'})
+                                               'placeholder': 'image'}),
+                   'first_name': TextInput({'class': 'form-control',
+                                               'placeholder': 'Имя'}),
+                   'last_name': TextInput({'class': 'form-control',
+                                               'placeholder': 'Фамилия'}),
+                   'is_all_agree': CheckboxInput({'class': 'form-check-input'}),
+                   'is_all_inform': CheckboxInput({'class': 'form-check-input'}),
                    }
 
 

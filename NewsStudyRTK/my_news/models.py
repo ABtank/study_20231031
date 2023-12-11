@@ -25,10 +25,9 @@ class PublishedToday(models.Manager):
 
 
 class MyArticle(models.Model):
-    categories = (("E", "Economics"),
-                  ("S", "Science"),
-                  ("IT", "IT"),
-                  ("F", "Fails"),
+    categories = (("hot", "Горячее"),
+                  ("fresh", "Свежее"),
+                  ("subscription", "Подписки"),
                   )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name="Автор")
     title = models.CharField(verbose_name="Название", max_length=50, default='')

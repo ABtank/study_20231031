@@ -5,10 +5,8 @@ from .models import *
 
 
 class MyArticleAdmin(admin.ModelAdmin):
-    list_display = ['title', 'author', 'dt_public']
-    list_filter = ['tags', 'author', 'dt_public']
-
-
+    list_display = ['title', 'category', 'author', 'dt_public']
+    list_filter = ['tags', 'category', 'author', 'dt_public']
 
 
 class MyTagAdmin(admin.ModelAdmin):

@@ -111,8 +111,12 @@
                     </div>
 
                     <div class="input-group-btn p-2">
-                        <input type="submit" class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill"
-                               value="Фильтр">
+                        <button type="submit" name="filter" class="text-body-emphasis fw-bold btn btn-outline-primary rounded-pill"
+                               value="filter">Фильтр</button>
+                        {% if is_filtered %}
+                        <button type="submit" name="clear_filter" class="text-body-emphasis fw-bold btn btn-outline-danger rounded-pill"
+                                value="clear_filter">Очистить фильтр</button>
+                        {% endif %}
                     </div>
                 </form>
             </div>

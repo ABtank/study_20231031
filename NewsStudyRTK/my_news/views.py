@@ -70,14 +70,19 @@ def publication(request, target):
     authors_selected = []
     filters = Q()  # Создаем пустой объект Q
     filters &= Q(category__iexact=target)
+    is_filtered = False
     if request.method == "POST":
-        tags_selected = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
-        if len(tags_selected) > 0:
-            filters &= Q(tags__in=tags_selected)
+        print(request.POST.getlist('clear_filter'))
+        if request.POST.get('clear_filter') is None:
+            tags_selected = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
+            if len(tags_selected) > 0:
+                filters &= Q(tags__in=tags_selected)
+                is_filtered = True
 
-        authors_selected = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
-        if len(authors_selected) > 0:
-            filters &= Q(author__in=authors_selected)
+            authors_selected = [int(tag_id) for tag_id in request.POST.getlist('authors_filter') if len(tag_id) > 0]
+            if len(authors_selected) > 0:
+                filters &= Q(author__in=authors_selected)
+                is_filtered = True
 
     match target:
         case 'hot' | 'fresh' | 'subscription':
@@ -99,6 +104,7 @@ def publication(request, target):
     context['tags_list'] = tags_list
     context['tags_selected'] = tags_selected
     context['authors_selected'] = authors_selected
+    context['is_filtered'] = is_filtered
     return render(request, "my_news/publication.html", context)
 
 
@@ -127,6 +133,8 @@ def article(request, article_id, mode):
                 current_user = request.user
                 if current_user.id is not None:  # проверили что не аноним
                     new_article = form.save()
+                    new_article.author = current_user
+                    new_article.save()  # сохраняем в БД
                     messages.info(request, f'Обновлена статья  №{article_id} - "{new_article.title}"!')
                     context["article"] = (MyArticle.objects
                                           .select_related("author")
@@ -155,6 +163,8 @@ def create_my_article(request):
                 new_article = form.save(commit=False)  # сохранение без коммита
                 new_article.category = get_category()  # рандомно устанавливаем категорию
                 new_article.save()  # сохраняем в БД
+                new_article.author = current_user
+                new_article.save()  # сохраняем в БД
                 form.save_m2m()
                 messages.info(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
                 messages.info(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!", 'primary')
@@ -167,15 +177,6 @@ def create_my_article(request):
     else:
         form = MyArticleForm()
     return render(request, 'my_news/create_article.html', {'form': form})
-
-
-def profile(request):
-    context = {}
-    if request.method == "POST":
-        messages.info(request, f'Обновили типа данные! {request.POST.get("username")}')
-    else:
-        print("GET")
-    return render(request, "my_news/profile.html", context)
 
 
 def info(request):
@@ -203,7 +204,7 @@ def my_registration(request):
             # создаем пустой аккаунт
             acc = Account(user.id)
             acc.save()
-            messages.success(request, f'{username} был зарегистрирован!','info')
+            messages.success(request, f'{username} был зарегистрирован!', 'info')
             # return redirect('my_profile')
             return redirect('sing_in')
     else:
@@ -211,8 +212,8 @@ def my_registration(request):
     context = {'form': form}
     return render(request, 'my_news/my_registration.html', context)
 
-
-def profile_update(request):
+@login_required(login_url="my_news")
+def my_profile(request):
     user = request.user
     account = Account.objects.filter(user=user).first()
     if account is None:
@@ -225,11 +226,20 @@ def profile_update(request):
             user_form.save()
             account_form.save()
             messages.info(request, "Профиль успешно обновлен")
-            return redirect('profile')
-    else:
-        context = {'account_form': AccountUpdateForm(instance=account),
-                   'user_form': UserUpdateForm(instance=user)}
-    return render(request, 'my_news/edit_profile.html', context)
+        else:
+            messages.error(request, "Профиль обновить не удалось", 'danger')
+    count_my_articles = MyArticle.objects.filter(author=user).count()
+    count_hot_articles = MyArticle.objects.filter(author=user, category__iexact='hot').count()
+    count_fresh_articles = MyArticle.objects.filter(author=user, category__iexact='fresh').count()
+    count_subscription_articles = MyArticle.objects.filter(author=user, category__iexact='subscription').count()
+    context = {'account_form': AccountUpdateForm(instance=account),
+               'user_form': UserUpdateForm(instance=user),
+               'count_my_articles': count_my_articles,
+               'count_hot_articles': count_hot_articles,
+               'count_fresh_articles': count_fresh_articles,
+               'count_subscription_articles': count_subscription_articles,
+               }
+    return render(request, 'my_news/profile.html', context)
 
 
 def password_update(request):
