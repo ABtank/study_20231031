@@ -2,7 +2,7 @@ from django import forms
 from django.core.validators import MinLengthValidator
 
 from django.forms import ModelForm, Textarea, CheckboxSelectMultiple, Select, SelectMultiple
-from .models import Article
+from .models import Article, Image
 
 
 class MultipleFileInput(forms.ClearableFileInput):
@@ -22,6 +22,12 @@ class MultipleFileField(forms.FileField):
             result = single_file_clean(data, initial)
         return result
 
+
+from django.forms import inlineformset_factory
+ImagesFormSet = inlineformset_factory(Article, Image, fields=("image",),extra=1,max_num=4,
+    widgets={
+        "image_field": MultipleFileField(),
+    })
 
 class ArticleForm(ModelForm):
     image_field = MultipleFileField()

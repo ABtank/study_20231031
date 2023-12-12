@@ -10,12 +10,72 @@ from django.core.paginator import Paginator
 from django.db.models import Q, Count
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic import DeleteView, UpdateView
 
-from .forms import MyArticleForm
-from .models import MyTag, MyArticle, User
+from .forms import MyArticleForm, ImagesFormSet
+from .models import MyTag, MyArticle, User, MyImage
 from users.models import Account
 
 from users.forms import AccountUpdateForm, UserUpdateForm
+
+class MyArticleUpdateView(UpdateView):
+    model = MyArticle
+    template_name = 'my_news/create_article.html'
+    fields = ['title', 'anouncement', 'text', 'tags']
+
+    def get_context_data(self, **kwargs):
+        context = super(MyArticleUpdateView, self).get_context_data(**kwargs)
+        current_object = self.object
+        context['image_form'] = ImagesFormSet(instance=current_object)
+        return context
+
+    def post(self, request, **kwargs):
+        print(request.POST)
+        request.POST = request.POST
+        current_object = MyArticle.objects.get(id=request.POST['myimage_set-0-article'])
+        deleted_ids = []
+        for i in range(int(request.POST['myimage_set-TOTAL_FORMS'])):  # удаление всех по галочкам
+            field_delete = f'myimage_set-{i}-DELETE'
+            field_image_id = f'myimage_set-{i}-id'
+            if field_delete in request.POST and request.POST[field_delete] == 'on':
+                image = MyImage.objects.get(id=request.POST[field_image_id])
+                image.delete()
+                deleted_ids.append(field_image_id)
+
+                # тут же удалить картинку из request.FILES
+        # Замена картинки
+        for i in range(int(request.POST['myimage_set-TOTAL_FORMS'])):  # удаление всех по галочкам
+            field_replace = f'myimage_set-{i}-image'  # должен быть в request.FILES
+            field_image_id = f'myimage_set-{i}-id'  # этот файл мы заменим
+            if field_replace in request.FILES and request.POST[
+                field_image_id] != '' and field_image_id not in deleted_ids:
+                image = MyImage.objects.get(id=request.POST[field_image_id])  #
+                image.delete()  # удаляем старый файл
+                for img in request.FILES.getlist(field_replace):  # новый добавили
+                    MyImage.objects.create(article=current_object, image=img, title=img.name)
+                del request.FILES[field_replace]  # удаляем использованный файл
+        if request.FILES:  # Добавление нового изображения
+            print('!!!!!!!!!!!!!!!!!', request.FILES)
+            for input_name in request.FILES:
+                for img in request.FILES.getlist(input_name):
+                    print('###############', img)
+                    MyImage.objects.create(article=current_object, image=img, title=img.name)
+
+        return super(MyArticleUpdateView, self).post(request, **kwargs)
+
+class MyArticleDeleteView(DeleteView):
+    model = MyArticle
+    success_url = reverse_lazy('my_news')
+    template_name = 'my_news/delete_article.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_object = self.object
+        images = MyImage.objects.filter(article=current_object)
+        context['images'] = images
+        return context
+
 
 
 def generate_random_list(input_list):
@@ -141,13 +201,15 @@ def article(request, article_id, mode):
         case 'edit':
             if request.method == "POST":
                 print("POST")
-                form = MyArticleForm(request.POST, instance=context["article"])
+                form = MyArticleForm(request.POST, instance=context["article"], files=request.FILES)
                 print(form.changed_data)
                 current_user = request.user
                 if current_user.id is not None:  # проверили что не аноним
                     new_article = form.save()
                     new_article.author = current_user
                     new_article.save()  # сохраняем в БД
+                    for img in request.FILES.getlist('image_field'):
+                        MyImage.objects.create(article=new_article, image=img, title=img.name)
                     messages.info(request, f'Обновлена статья  №{article_id} - "{new_article.title}"!')
                     context["article"] = (MyArticle.objects
                                           .select_related("author")
@@ -169,7 +231,7 @@ def article(request, article_id, mode):
 @login_required(login_url="my_news")
 def create_my_article(request):
     if request.method == 'POST':
-        form = MyArticleForm(request.POST)
+        form = MyArticleForm(request.POST, request.FILES)
         if form.is_valid():
             current_user = request.user
             if current_user.id is not None:  # проверили что не аноним
@@ -179,6 +241,8 @@ def create_my_article(request):
                 new_article.author = current_user
                 new_article.save()  # сохраняем в БД
                 form.save_m2m()
+                for img in request.FILES.getlist('image_field'):
+                    MyImage.objects.create(article=new_article, image=img, title=img.name)
                 messages.info(request, f"Создана новая статья №{new_article.id} - {new_article.title}")
                 messages.info(request, f"Поздравляем! Ваша статья попала в раздел {new_article.category}!", 'primary')
                 if request.POST.get('saveAndNew') is not None:

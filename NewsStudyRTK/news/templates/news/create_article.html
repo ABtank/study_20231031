@@ -13,6 +13,7 @@
             <form method="post" class="contact_form" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form|crispy }}
+                {{ image_form|crispy }}
                 <input type="submit" class="btn btn-success" value="Сохранить">
                 <button type="submit" class="btn btn-success"  name="saveAndNew">Сохранить и создать еще</button>
             </form>

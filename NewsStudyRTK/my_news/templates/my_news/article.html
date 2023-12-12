@@ -25,8 +25,11 @@
                     <div class="col-auto mr-auto"><a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>
                     </div>
                     <div class="col col-auto">{% if request.user.id  == article.author.id %}
-                        <a href="{% url 'article' article_id=article.id mode='edit' %}"
+{#                        <a href="{% url 'article' article_id=article.id mode='edit' %}"#}
+                        <a href="{% url 'article_update' article.pk %}"
                            class="btn btn-outline-primary rounded-pill">Редактировать свою статью</a>
+                        <a href="{% url 'article_delete' article.pk %}"
+                           class="btn btn-outline-danger rounded-pill">Удалить свою статью</a>
                     {% endif %}
                     </div>
                 </div>
@@ -73,7 +76,7 @@
             <div class="row  me-5">
                 <div class="col-md-12 col-lg-12">
                     <h4 class="mb-3">Основные данные</h4>
-                    <form class="needs-validation" novalidate="" method="post">
+                    <form class="needs-validation" novalidate="" method="post"  enctype="multipart/form-data">
                         {% csrf_token %}
                         {{ form|crispy }}
                         <input type="submit" class="btn btn-primary" value="Сохранить">

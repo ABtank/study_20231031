@@ -2,6 +2,7 @@ import datetime
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
 
 
 class MyTag(models.Model):
@@ -48,10 +49,33 @@ class MyArticle(models.Model):
         return f"{self.title} от: {self.dt_public.date()}"
 
     def get_absolute_url(self):
-        return f"/news/show/{self.pk}"
+        return f"/my_news/article/{self.pk}/view"
+
+    def image_tag(self):
+        images = MyImage.objects.filter(article=self)
+        print(images)
+        if images:
+            return mark_safe(MyImage.image_tag(images[0]))
+        else:
+            return '(not image)'
 
     # метаданные модели
     class Meta:
         ordering = ['-dt_public', 'title']
         verbose_name = "Новость"
         verbose_name_plural = "Новости"
+
+
+class MyImage(models.Model):
+    article = models.ForeignKey(MyArticle, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50, blank=True)
+    image = models.ImageField(upload_to=f'article_image/')
+
+    def __str__(self):
+        return self.title
+
+    def image_tag(self):
+        if self.image is not None:
+            return mark_safe(f"<img src='{self.image.url}' title='{self.title}' style=\"width: auto;height: 150px;\">")
+        else:
+            return '(not image)'

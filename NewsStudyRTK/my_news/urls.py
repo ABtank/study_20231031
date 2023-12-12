@@ -18,4 +18,6 @@ urlpatterns = [
     path('sign_out', auth_views.LogoutView.as_view(
         template_name='my_news/sign_out.html'), name='sign_out'),
     path('search_news/', views.search_news, name='search_news'),
+    path('delete/<int:pk>', views.MyArticleDeleteView.as_view(), name="article_delete"),
+    path('update/<int:pk>', views.MyArticleUpdateView.as_view(), name="article_update"),
 ]

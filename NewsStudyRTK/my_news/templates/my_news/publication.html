@@ -35,9 +35,11 @@
                     <div class="col-md-12 px-0">
                         <h1 class="display-4 fst-italic"> {{ article.title }}
                             {% if request.user.id  == article.author.id %}
-                                <a href="{% url 'article' article_id=article.id mode='edit' %}"
+                                <a href="{% url 'article_update' article.pk %}"
                                    class="btn btn-outline-primary rounded-pill">Редактировать свою
                                     статью</a>
+                                <a href="{% url 'article_delete' article.pk %}"
+                                   class="btn btn-outline-danger rounded-pill">Удалить свою статью</a>
                             {% endif %}
                         </h1>
                         <p class="lead">{{ article.anouncement }}....</p>
