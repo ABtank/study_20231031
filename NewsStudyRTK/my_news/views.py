@@ -61,7 +61,7 @@ class MyArticleUpdateView(UpdateView):
                 for img in request.FILES.getlist(input_name):
                     print('###############', img)
                     MyImage.objects.create(article=current_object, image=img, title=img.name)
-
+        messages.info(request, f'Обновлена статья  №{current_object.id} - "{current_object.title}"!')
         return super(MyArticleUpdateView, self).post(request, **kwargs)
 
 class MyArticleDeleteView(DeleteView):
