@@ -4,16 +4,18 @@
     <ul class="nav nav-pills">
         {% if not is_filtered %}
         <li><a href="{% url 'publication' target='hot' %}"
-               class="nav-link px-2 {% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a></li>
+               class="nav-link px-2 {% if target|default:''  == 'hot' %}active{% endif %}"><i class="bi bi-fire"></i> Горячее</a></li>
         <li style="margin-left: 50px;"><a href="{% url 'publication' target='fresh' %}"
-               class="nav-link px-2 {% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a></li>
-        <li style="margin-left: 50px;"><a href="{% url 'publication' target='subscription' %}"
-               class="nav-link px-2 {% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
-        </li>
+               class="nav-link px-2 {% if target|default:''  == 'fresh' %}active{% endif %}"><i class="bi bi-person-wheelchair"></i> Свежее</a></li>
+            {% if request.user.id %}
+            <li style="margin-left: 50px;"><a href="{% url 'publication' target='subscription' %}"
+                   class="nav-link px-2 {% if target|default:''  == 'subscription' %}active{% endif %}"><i class="bi bi-bookmark-star"></i> Подписки</a>
+            </li>
+            {% endif %}
         {% else %}
             <li style="margin-left: 50px;">
                 <button type="button" class="text-body-emphasis fw-bold btn btn-outline-danger rounded-pill"
-                        value="clear_filter" onclick="$('button[name=clear_filter]').trigger('click')">Очистить фильтр
+                        value="clear_filter" onclick="$('button[name=clear_filter]').trigger('click')"><i class="bi bi-trash"></i> Очистить фильтр
                 </button>
             </li>
         {% endif %}

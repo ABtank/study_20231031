@@ -65,11 +65,11 @@
                 <div class="position-sticky" style="top: 2rem;">
                     <div class="p-4 mb-3 bg-body-tertiary rounded">
                         <h4 class="fst-italic">Об авторе</h4>
-                        <p class="mb-0">{{ article.author }}</p>
-                        <p class="mb-0"><b>email:</b> {{ article.author.email }}</p>
-                        <p class="mb-0"><b>Ник:</b> {{ article.author.account.nickname }}</p>
-                        <p class="mb-0"><b>Д/р:</b> {{ article.author.account.birthdate }}</p>
-                        <p class="mb-0"><b>Пол:</b> {{ article.author.account.gender }}</p>
+                        <p class="mb-0"><i class="bi bi-emoji-sunglasses"></i> {{ article.author }}</p>
+                        <p class="mb-0"><b><i class="bi bi-envelope-at"></i> email:</b> {{ article.author.email }}</p>
+                        <p class="mb-0"><b><i class="bi bi-tencent-qq"></i></i> Ник:</b> {{ article.author.account.nickname }}</p>
+                        <p class="mb-0"><b><i class="bi bi-cake"></i> Д/р:</b> {{ article.author.account.birthdate|default:'' }}</p>
+                        <p class="mb-0"><b><i class="bi bi-gender-trans"></i> Пол:</b> {{ article.author.account.gender }}</p>
                     </div>
 
 
@@ -95,7 +95,7 @@
         <div class="py-3 text-center">
             <h2 class="bi bi-journal-text text-primary"></h2>
             <h2> {% if request.resolver_match.kwargs.article_id|default:0 > 0 %}Редактирование новости{% else %}Создание{% endif %}</h2>
-            <p class="lead">Заполни все и ничего не произайдет</p>
+            <p class="lead">Заполни все</p>
         </div>
         <div class="container">
             <div class="row  me-5">

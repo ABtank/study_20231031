@@ -173,8 +173,11 @@ def publication(request, target):
     else:
         filters &= Q(category__iexact=target)
 
+    if target == "my":
+        filters &= Q(author=request.user.id)
+
     match target:
-        case 'hot' | 'fresh' | 'subscription':
+        case 'hot' | 'fresh' | 'subscription' | 'my':
             articles = (MyArticle.objects
                         .select_related("author")
                         .prefetch_related('tags')

@@ -13,7 +13,7 @@
             <div class="col-md-12 col-lg-12">
                 <form method="post" class="contact_form">
                     {% csrf_token %}
-                    <a href="{% url 'news_list' %}" class="btn btn-outline-warning rounded-pill">Отмена</a>
+                    <a href="{% url 'publication' target='my' %}" class="btn btn-outline-warning rounded-pill">Отмена</a>
                     <button type="submit" class="btn btn-outline-danger rounded-pill">Удалить</button>
                 </form>
             </div>

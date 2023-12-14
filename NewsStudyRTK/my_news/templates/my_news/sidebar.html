@@ -14,7 +14,7 @@
                class="{% if request.resolver_match.view_name  == 'my_news' %}active{% endif %}">
             <i class="bi bi-house-door"></i>
             Главная</a></li>
-        <li><a href="{% url 'publication' target='hot' %}"
+        <li><a href="{% url 'publication' target='hot' %}" style="margin-top: 20px"
                class="{% if target|default:''  == 'hot' %}active{% endif %}">
             <i class="bi bi-fire"></i>
             Горячее</a></li>
@@ -22,25 +22,34 @@
                class="{% if target|default:''  == 'fresh' %}active{% endif %}">
             <i class="bi bi-person-wheelchair"></i>
             Свежее</a></li>
+
+        {% if request.user.id %}
         <li><a href="{% url 'publication' target='subscription' %}"
                class="{% if target|default:''  == 'subscription' %}active{% endif %}">
             <i class="bi bi-bookmark-star"></i>
             Подписки</a>
         </li>
-        <li><a href="{% url 'create_my_article' %}"
+        <li><a href="{% url 'publication' target='my' %}"
+               class="{% if target|default:''  == 'my' %}active{% endif %}">
+            <i class="bi bi-vector-pen"></i>
+            Мои статьи</a>
+        </li>
+        <li><a href="{% url 'create_my_article' %}" style="margin-top: 20px"
                class="{% if request.resolver_match.view_name == 'create_my_article' %}active{% endif %}">
-            <i class="bi bi-pen"></i>
+            <i class="bi bi-plus-square"></i>
             Создать новость</a>
         </li>
         <li><a href="{% url 'my_profile' %}"
-        class="{% if request.resolver_match.view_name  == 'my_profile' %}active{% endif %}">
+            class="{% if request.resolver_match.view_name  == 'my_profile' %}active{% endif %}">
             <i class="bi bi-person-gear"></i>
             Профиль</a></li>
+        {% endif %}
+
         <li><a href="{% url 'info' %}"
          class="{% if request.resolver_match.view_name  == 'info' %}active{% endif %}">
             <i class="bi bi-patch-exclamation"></i>
             О компании</a></li>
-        <li><a href="{% url 'sign_out' %}">
+        <li><a href="{% url 'sign_out' %}" style="margin-top: 20px">
             {% if request.user.id %}<i class="bi bi-ban"></i> Выйти
             {% else %}<i class="bi bi-arrow-return-right"></i> Войти{% endif %}</a></li>
     </ul>
