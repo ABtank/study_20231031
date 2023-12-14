@@ -2,7 +2,7 @@
 import random
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, update_session_auth_hash
+from django.contrib.auth import authenticate, update_session_auth_hash, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
@@ -18,6 +18,7 @@ from .models import MyTag, MyArticle, User, MyImage
 from users.models import Account
 
 from users.forms import AccountUpdateForm, UserUpdateForm
+
 
 class MyArticleUpdateView(UpdateView):
     model = MyArticle
@@ -64,6 +65,7 @@ class MyArticleUpdateView(UpdateView):
         messages.info(request, f'Обновлена статья  №{current_object.id} - "{current_object.title}"!')
         return super(MyArticleUpdateView, self).post(request, **kwargs)
 
+
 class MyArticleDeleteView(DeleteView):
     model = MyArticle
     success_url = reverse_lazy('my_news')
@@ -75,7 +77,6 @@ class MyArticleDeleteView(DeleteView):
         images = MyImage.objects.filter(article=current_object)
         context['images'] = images
         return context
-
 
 
 def generate_random_list(input_list):
@@ -119,7 +120,7 @@ def index(request):
 
 def publication(request, target):
     random_article(target)
-    context = {"target": target}
+    context = {}
     tags_list = (MyTag.objects
                  .annotate(num_articles=Count('myarticle'))
                  .all())
@@ -132,28 +133,45 @@ def publication(request, target):
     tags_selected = []
     authors_selected = []
     filters = Q()  # Создаем пустой объект Q
-    filters &= Q(category__iexact=target)
+
+    if request.session.get('filters') is not None:
+        session_filter = request.session.get('filters')
+    else:
+        session_filter = {}
+
     is_filtered = False
     if request.method == "POST":
-        print(request.POST.getlist('clear_filter'))
+        if request.session.get('filters', None) is not None:
+            del request.session['filters']
         if request.POST.get('clear_filter') is None:
             tags_selected = [int(tag_id) for tag_id in request.POST.getlist('tags_filter') if len(tag_id) > 0]
             if len(tags_selected) > 0:
-                filters &= Q(tags__in=tags_selected)
-                is_filtered = True
-
+                session_filter['tags_filter'] = tags_selected
             authors_selected = [int(author_id) for author_id in request.POST.getlist('authors_filter') if
                                 len(author_id) > 0]
             if len(authors_selected) > 0:
-                filters &= Q(author__in=authors_selected)
-                is_filtered = True
-            print('search_news', request.POST.get('search_news'))
+                session_filter['authors_filter'] = authors_selected
+
             search = request.POST.get('search_news')
             if search is not None and len(search) > 0:
-                filters &= (Q(title__icontains=search) | Q(anouncement__icontains=search))
-                is_filtered = True
+                session_filter['search_news'] = search
             else:
                 search = ''
+            request.session['filters'] = session_filter
+
+    if request.session.get('filters') is not None:
+        is_filtered = True
+        if session_filter.get('tags_filter', None) is not None:
+            tags_selected = session_filter['tags_filter']
+            filters &= Q(tags__in=tags_selected)
+        if session_filter.get('authors_filter', None) is not None:
+            authors_selected = session_filter['authors_filter']
+            filters &= Q(author__in=authors_selected)
+        if session_filter.get('search_news', None) is not None:
+            search = session_filter['search_news']
+            filters &= (Q(title__icontains=search) | Q(anouncement__icontains=search))
+    else:
+        filters &= Q(category__iexact=target)
 
     match target:
         case 'hot' | 'fresh' | 'subscription':
@@ -171,6 +189,9 @@ def publication(request, target):
     page_number = request.GET.get('page')  # номер страницы, полученный из запроса
     page_articles = paginator.get_page(page_number)
 
+    print(request.GET)
+
+    context['target'] = target
     context['articles'] = page_articles
     context['tags_list'] = tags_list
     context['tags_selected'] = tags_selected
@@ -281,9 +302,11 @@ def my_registration(request):
             # создаем пустой аккаунт
             acc = Account(user.id)
             acc.save()
+            # залогинить
+            login(request, user)
             messages.success(request, f'{username} был зарегистрирован!', 'info')
-            # return redirect('my_profile')
-            return redirect('sing_in')
+            return redirect('my_profile')
+            # return redirect('sing_in')
     else:
         form = UserCreationForm()
     context = {'form': form}

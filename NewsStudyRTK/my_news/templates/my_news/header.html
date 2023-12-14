@@ -2,7 +2,7 @@
 
 <header class="d-flex justify-content-center py-1 border-bottom"  style="z-index: 990">
     <ul class="nav nav-pills">
-
+        {% if not is_filtered %}
         <li><a href="{% url 'publication' target='hot' %}"
                class="nav-link px-2 {% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a></li>
         <li style="margin-left: 50px;"><a href="{% url 'publication' target='fresh' %}"
@@ -10,6 +10,13 @@
         <li style="margin-left: 50px;"><a href="{% url 'publication' target='subscription' %}"
                class="nav-link px-2 {% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
         </li>
+        {% else %}
+            <li style="margin-left: 50px;">
+                <button type="button" class="text-body-emphasis fw-bold btn btn-outline-danger rounded-pill"
+                        value="clear_filter" onclick="$('button[name=clear_filter]').trigger('click')">Очистить фильтр
+                </button>
+            </li>
+        {% endif %}
     </ul>
 
 <!--    <div class="col-md-1 text-end"></div>-->
