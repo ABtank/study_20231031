@@ -15,8 +15,8 @@
                class="icon-link {% if target|default:''  == 'hot' %}active{% endif %}">Горячее</a>
         <a href="{% url 'publication' target='fresh' %}"
                class="icon-link {% if target|default:''  == 'fresh' %}active{% endif %}">Свежее</a>
-        <a href="{% url 'publication' target='subscription' %}"
-               class="icon-link {% if target|default:''  == 'subscription' %}active{% endif %}">Подписки</a>
+        <a href="{% url 'publication' target='best' %}"
+               class="icon-link {% if target|default:''  == 'best' %}active{% endif %}">Лучшее</a>
 
       </div>
     </div>

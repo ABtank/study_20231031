@@ -8,8 +8,8 @@
         <li style="margin-left: 50px;"><a href="{% url 'publication' target='fresh' %}"
                class="nav-link px-2 {% if target|default:''  == 'fresh' %}active{% endif %}"><i class="bi bi-person-wheelchair"></i> Свежее</a></li>
             {% if request.user.id %}
-            <li style="margin-left: 50px;"><a href="{% url 'publication' target='subscription' %}"
-                   class="nav-link px-2 {% if target|default:''  == 'subscription' %}active{% endif %}"><i class="bi bi-bookmark-star"></i> Подписки</a>
+            <li style="margin-left: 50px;"><a href="{% url 'publication' target='best' %}"
+                   class="nav-link px-2 {% if target|default:''  == 'best' %}active{% endif %}"><i class="bi bi-bookmark-star"></i> Лучшее</a>
             </li>
             {% endif %}
         {% else %}

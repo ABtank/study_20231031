@@ -27,7 +27,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>{{ target }}</h1>
+    <h1>{% if is_filtered %}Фильтр{% else %}{{ target }}{% endif %}</h1>
     <div class="row me-5">
         <div class="col-md-9 col-lg-9">
             {% for article in articles %}
@@ -121,10 +121,23 @@
                         </div>
                     </div>
                     <div class="p-4 mb-3 bg-body-tertiary rounded">
+                        <h4 class="fst-italic">Категории</h4>
+                        <div class="input-group">
+                            <select class="form-select" name="categories_filter" size="3" multiple>
+                                {% for category in categories_list %}
+                                    <option value="{{ category.0 }}"
+                                            {% if category.0 in categories_selected %}
+                                            selected {% endif %}>
+                                        {{ category.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 mb-3 bg-body-tertiary rounded">
                         <h4 class="fst-italic">Теги</h4>
                         <div class="input-group">
-                            <select class="form-select" name="tags_filter" style="width:40%" multiple>
-                                <option value=""></option>
+                            <select class="form-select" name="tags_filter" size="3" multiple>
                                 {% for tag in tags_list %}
                                     <option value="{{ tag.id }}"
                                             {% if tag.id in tags_selected %}
@@ -138,8 +151,7 @@
                     <div class="p-4 mb-3 bg-body-tertiary rounded">
                         <h4 class="fst-italic">Авторы</h4>
                         <div class="input-group">
-                            <select class="form-select" name="authors_filter" style="width:40%" multiple>
-                                <option value=""></option>
+                            <select class="form-select" name="authors_filter" size="3" multiple>
                                 {% for author in authors_list %}
                                     <option value="{{ author.id }}"
                                             {% if author.id in authors_selected %}

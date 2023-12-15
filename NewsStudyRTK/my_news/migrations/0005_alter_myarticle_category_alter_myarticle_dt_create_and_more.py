@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='myarticle',
             name='category',
-            field=models.CharField(choices=[('hot', 'Горячее'), ('fresh', 'Свежее'), ('subscription', 'Подписки')], max_length=20, verbose_name='Категории'),
+            field=models.CharField(choices=[('hot', 'Горячее'), ('fresh', 'Свежее'), ('subscription', 'Лучшее')], max_length=20, verbose_name='Категории'),
         ),
         migrations.AlterField(
             model_name='myarticle',

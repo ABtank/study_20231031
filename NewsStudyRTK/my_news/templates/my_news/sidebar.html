@@ -24,10 +24,10 @@
             Свежее</a></li>
 
         {% if request.user.id %}
-        <li><a href="{% url 'publication' target='subscription' %}"
-               class="{% if target|default:''  == 'subscription' %}active{% endif %}">
+        <li><a href="{% url 'publication' target='best' %}"
+               class="{% if target|default:''  == 'best' %}active{% endif %}">
             <i class="bi bi-bookmark-star"></i>
-            Подписки</a>
+            Лучшее</a>
         </li>
         <li><a href="{% url 'publication' target='my' %}"
                class="{% if target|default:''  == 'my' %}active{% endif %}">

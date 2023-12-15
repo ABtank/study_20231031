@@ -89,8 +89,6 @@ def random_article(target):
     list_tags = MyTag.objects.all().values_list('id', flat=True)
     random_tag_ids = generate_random_list(list(list_tags))
     random_tags = MyTag.objects.filter(id__in=random_tag_ids)
-    category = ['hot', 'fresh', 'subscription']
-    random_number = random.randint(0, len(category) - 1)
     len_text = random.randint(100, 500)
     numb = MyArticle.objects.count() + 1
     authors = User.objects.all()
@@ -99,7 +97,7 @@ def random_article(target):
     article = MyArticle(author=author, title=f"title-{target} {numb}",
                         anouncement=(f"Анонс-{target} {numb}" * (len_text // 5))[:250],
                         text=f"{target} {numb} " * len_text,
-                        category=target)
+                        category=get_category())
     article.save()
     article.tags.set(random_tags)
     article.save()
@@ -107,7 +105,7 @@ def random_article(target):
 
 
 def get_category():
-    category = ['hot', 'fresh', 'subscription']
+    category = [category[0] for category in MyArticle.categories]
     random_number = random.randint(0, len(category) - 1)
     return category[random_number]
 
@@ -131,6 +129,10 @@ def publication(request, target):
     # Фильтр
     search = ''
     tags_selected = []
+    if target in [category[0] for category in MyArticle.categories]:
+        categories_selected = target
+    else:
+        categories_selected = []
     authors_selected = []
     filters = Q()  # Создаем пустой объект Q
 
@@ -152,6 +154,9 @@ def publication(request, target):
             if len(authors_selected) > 0:
                 session_filter['authors_filter'] = authors_selected
 
+            if len(request.POST.getlist('categories_filter')) > 0:
+                session_filter['categories_filter'] = request.POST.getlist('categories_filter')
+
             search = request.POST.get('search_news')
             if search is not None and len(search) > 0:
                 session_filter['search_news'] = search
@@ -167,17 +172,22 @@ def publication(request, target):
         if session_filter.get('authors_filter', None) is not None:
             authors_selected = session_filter['authors_filter']
             filters &= Q(author__in=authors_selected)
+        if session_filter.get('categories_filter', None) is not None:
+            categories_selected = session_filter['categories_filter']
+            filters &= Q(category__in=categories_selected)
         if session_filter.get('search_news', None) is not None:
             search = session_filter['search_news']
             filters &= (Q(title__icontains=search) | Q(anouncement__icontains=search))
-    else:
-        filters &= Q(category__iexact=target)
 
     if target == "my":
         filters &= Q(author=request.user.id)
+        print(target)
+
+    if not is_filtered and target in [category[0] for category in MyArticle.categories]:
+        filters &= Q(category__iexact=target)
 
     match target:
-        case 'hot' | 'fresh' | 'subscription' | 'my':
+        case 'hot' | 'fresh' | 'best' | 'my':
             articles = (MyArticle.objects
                         .select_related("author")
                         .prefetch_related('tags')
@@ -192,12 +202,14 @@ def publication(request, target):
     page_number = request.GET.get('page')  # номер страницы, полученный из запроса
     page_articles = paginator.get_page(page_number)
 
-    print(request.GET)
+    print(filters)
 
     context['target'] = target
     context['articles'] = page_articles
     context['tags_list'] = tags_list
     context['tags_selected'] = tags_selected
+    context['categories_list'] = MyArticle.categories
+    context['categories_selected'] = categories_selected
     context['authors_selected'] = authors_selected
     context['is_filtered'] = is_filtered
     context['search_news'] = search
@@ -335,13 +347,13 @@ def my_profile(request):
     count_my_articles = MyArticle.objects.filter(author=user).count()
     count_hot_articles = MyArticle.objects.filter(author=user, category__iexact='hot').count()
     count_fresh_articles = MyArticle.objects.filter(author=user, category__iexact='fresh').count()
-    count_subscription_articles = MyArticle.objects.filter(author=user, category__iexact='subscription').count()
+    count_best_articles = MyArticle.objects.filter(author=user, category__iexact='best').count()
     context = {'account_form': AccountUpdateForm(instance=account),
                'user_form': UserUpdateForm(instance=user),
                'count_my_articles': count_my_articles,
                'count_hot_articles': count_hot_articles,
                'count_fresh_articles': count_fresh_articles,
-               'count_subscription_articles': count_subscription_articles,
+               'count_best_articles': count_best_articles,
                }
     return render(request, 'my_news/profile.html', context)
 
