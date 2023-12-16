@@ -37,7 +37,7 @@ class ArticleImageInline(admin.TabularInline):
 class ArticleAdmin(admin.ModelAdmin):
     ordering = ['-dt_public', 'title', 'author']
     list_display = ['id', 'title', 'symbols_count', 'author', 'dt_public', 'image_tag']
-    list_filter = ['tags', 'author', 'category', 'dt_public',ArticleFilter]
+    list_filter = ['tags', 'author', 'category', 'dt_public', ArticleFilter]
     list_display_links = ['id']
     list_editable = ['title', 'author']
     # readonly_fields = ['author']
@@ -92,3 +92,8 @@ class TagAdmin(admin.ModelAdmin):
 class ImageAdmin(admin.ModelAdmin):
     list_display = ['title', 'image_tag']
     list_filter = ['title']
+
+
+@admin.register(ViewCount)
+class ViewCountAdmin(admin.ModelAdmin):
+    list_display = ['article', 'ip_address', 'dt_view']

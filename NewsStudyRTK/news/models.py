@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.utils.safestring import mark_safe
 
 
-
-
 class Tag(models.Model):
     title = models.CharField(max_length=80)
     status = models.BooleanField(default=True)
@@ -16,10 +14,10 @@ class Tag(models.Model):
 
     def tag_count(self):
         count = self.article_set.count()
-        #комментарий: когда мы работаем со связанными объектами (foreign_key, m2m, один к одному),
-        #мы можем обращаться к связанным таблицам при помощи синтаксиса:
-        #связаннаяМодель_set и что-то делать с результатами. В этом примере - мы используем связанные article
-        #и вызываем метод count
+        # комментарий: когда мы работаем со связанными объектами (foreign_key, m2m, один к одному),
+        # мы можем обращаться к связанным таблицам при помощи синтаксиса:
+        # связаннаяМодель_set и что-то делать с результатами. В этом примере - мы используем связанные article
+        # и вызываем метод count
         # пользовать Tag.tag_count(Tag.objects.all().first())
         return count
 
@@ -47,7 +45,7 @@ class Article(models.Model):
     anouncement = models.TextField(verbose_name="Аннотация", max_length=256, help_text="это аннотация")
     text = models.TextField("Текст новости")
     dt_public = models.DateTimeField(verbose_name="Дата публикации", auto_now=True)
-    dt_create = models.DateTimeField(verbose_name="Дата создания", auto_created=True, default=datetime.datetime.now())
+    dt_create = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     category = models.CharField(choices=categories, max_length=20, verbose_name="Категории")
 
     tags = models.ManyToManyField(to=Tag, blank=True, verbose_name="Теги")
@@ -75,6 +73,9 @@ class Article(models.Model):
         else:
             return '(not image)'
 
+    def get_views_count(self):
+        return self.views.count()
+
     # метаданные модели
     class Meta:
         ordering = ['-dt_public', 'title']
@@ -95,3 +96,18 @@ class Image(models.Model):
             return mark_safe(f"<img src='{self.image.url}' title='{self.title}' style=\"width: auto;height: 150px;\">")
         else:
             return '(not image)'
+
+
+# счетчик просмотров
+class ViewCount(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE,
+                                related_name='views')
+    ip_address = models.GenericIPAddressField()
+    dt_view = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-dt_view',)
+        indexes = [models.Index(fields=['-dt_view'])]
+
+    def __str__(self):
+        return self.article.title

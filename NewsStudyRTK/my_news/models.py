@@ -34,8 +34,8 @@ class MyArticle(models.Model):
     title = models.CharField(verbose_name="Название", max_length=50, default='')
     anouncement = models.TextField(verbose_name="Аннотация", max_length=256, help_text="это аннотация")
     text = models.TextField("Текст новости")
-    dt_public = models.DateTimeField(verbose_name="Дата публикации", default=datetime.datetime.now())
-    dt_create = models.DateTimeField(verbose_name="Дата создания", auto_created=True, default=datetime.datetime.now())
+    dt_public = models.DateTimeField(verbose_name="Дата публикации", auto_now=True)
+    dt_create = models.DateTimeField(verbose_name="Дата создания", auto_now_add=True)
     category = models.CharField(choices=categories, max_length=20, verbose_name="Категории")
 
     tags = models.ManyToManyField(to=MyTag, blank=True, verbose_name="Теги")
@@ -59,6 +59,9 @@ class MyArticle(models.Model):
         else:
             return '(not image)'
 
+    def get_views_count(self):
+        return self.views.count()
+
     # метаданные модели
     class Meta:
         ordering = ['-dt_public', 'title']
@@ -79,3 +82,17 @@ class MyImage(models.Model):
             return mark_safe(f"<img src='{self.image.url}' title='{self.title}' style=\"width: auto;height: 150px;\">")
         else:
             return '(not image)'
+
+
+class MyViewCount(models.Model):
+    article = models.ForeignKey(MyArticle, on_delete=models.CASCADE,
+                                related_name='views')
+    ip_address = models.GenericIPAddressField()
+    dt_view = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-dt_view',)
+        indexes = [models.Index(fields=['-dt_view'])]
+
+    def __str__(self):
+        return self.article.title

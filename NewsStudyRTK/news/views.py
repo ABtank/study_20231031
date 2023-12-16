@@ -14,6 +14,8 @@ from django.db.models import Count, Q
 from .forms import ArticleForm, ImagesFormSet
 from .models import *
 
+from .utils import ViewCountMixin
+
 
 # URL:    path('search_auto/', views.search_auto, name='search_auto'),
 def search_auto(request):
@@ -30,7 +32,7 @@ def search_auto(request):
     return HttpResponse(data, mimetype)
 
 
-class ArticleDetailView(DetailView):
+class ArticleDetailView(ViewCountMixin, DetailView):
     model = Article
     template_name = 'news/news_detail.html'
     context_object_name = 'article'

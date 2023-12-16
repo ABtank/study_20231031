@@ -14,10 +14,12 @@ from django.urls import reverse_lazy
 from django.views.generic import DeleteView, UpdateView
 
 from .forms import MyArticleForm, ImagesFormSet
-from .models import MyTag, MyArticle, User, MyImage
+from .models import MyTag, MyArticle, User, MyImage, MyViewCount
 from users.models import Account
 
 from users.forms import AccountUpdateForm, UserUpdateForm
+
+from .utils import get_client_ip
 
 
 class MyArticleUpdateView(UpdateView):
@@ -234,6 +236,7 @@ def article(request, article_id, mode):
     match mode:
         case 'view':
             print('view')
+            MyViewCount.objects.get_or_create(article=article, ip_address=get_client_ip(request))
         case 'edit':
             if request.method == "POST":
                 print("POST")

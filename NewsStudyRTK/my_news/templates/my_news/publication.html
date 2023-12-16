@@ -52,8 +52,30 @@
                                 <u class="ms-2"><small>{{ tag.title }}</small></u>
                             {% endfor %}
                         </p>
-                        <p class="lead my-3"><b>Категория: </b><u>{{ article.category }}</u>
-                            <b class="ms-5">Автор: </b><i>{{ article.author.username }}</i></p>
+                        <div class="row justify-content-evenly">
+                            <div class="col"><p class="lead my-3"><b>Категория: </b><u>{{ article.category }}</u>
+                                <b class="ms-5">Автор: </b><i>{{ article.author.username }}</i></p>
+                            </div>
+                            <div class="col">
+                                <p class="my-3"><b>Дата публикации: </b><u>{{ article.dt_public|date }}</u></p>
+                            </div>
+                            <div class="col">
+                                <p class="my-3">
+                                    <span class="bi bi-eye"> <b>{{ article.get_views_count }}</b></span>
+                                    <span class="mx-4">
+                                        <i class="bi bi-hand-thumbs-down"></i>
+                                        <i class="bi bi-hand-thumbs-down-fill"></i>
+                                        <i class="bi bi-hand-thumbs-up"></i>
+                                        <i class="bi bi-hand-thumbs-up-fill"></i>
+                                    </span>
+                                    <span class="mx-4">
+                                        <i class="bi bi-journal-bookmark"></i>
+                                        <i class="bi bi-journal-bookmark-fill"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+
                     </div>
 
                 </div>

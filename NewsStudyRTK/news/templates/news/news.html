@@ -85,10 +85,15 @@
                                 <small>{{ tag.title }}</small>
                             {% endfor %}
                         </p>
-                        <p class="lead my-3"><u>{{ article.category }}</u></p>
-                        <p class="lead my-3"><i>{{ article.author.username }}</i></p>
-                        <a href="{% url 'news_delete' article.pk %}" class="btn btn-warning" >Удалить</a>
-                        <a href="{% url 'news_update' article.pk %}" class="btn btn-primary" >Редактировать</a>
+                        <div class="row justify-content-evenly">
+                            <div class="col"><u>Категория: {{ article.category }}</u></div>
+                            <div class="col"><i>Автор: {{ article.author.username }}</i></div>
+                            <div class="col"><small>Просмотры: ({{ article.get_views_count }})</small></div>
+                        </div>
+                        <div class="mt-2">
+                            <a href="{% url 'news_delete' article.pk %}" class="btn btn-warning" >Удалить</a>
+                            <a href="{% url 'news_update' article.pk %}" class="btn btn-primary" >Редактировать</a>
+                        </div>
                     </div>
                 </div>
             </div>
