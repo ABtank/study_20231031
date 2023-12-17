@@ -48,9 +48,9 @@
             <span class="hamb-bottom"></span>
         </button>
         <div class="container-fluid mx-5">
-            {% if messages %}
                 <div class="container">
-                    <div class="row me-5">
+                    <div class="row me-5" id="main_messages_block">
+                        {% if messages %}
                         {% for message in messages %}
                             <div class="main_message alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}
                                 alert-dismissible fade show " role="alert">
@@ -59,9 +59,9 @@
                                         aria-label="Close"></button>
                             </div>
                         {% endfor %}
+                        {% endif %}
                     </div>
                 </div>
-            {% endif %}
             {% block body %}
                 {% include 'my_news/body.html' %}
             {% endblock %}

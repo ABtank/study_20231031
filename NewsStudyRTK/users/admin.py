@@ -10,3 +10,12 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Account, AccountAdmin)
+
+
+@admin.register(FavoriteArticle)
+class FavoriteArticleAdmin(admin.ModelAdmin):
+    list_display = ['article', 'user', 'create_at']
+
+@admin.register(MyFavoriteArticle)
+class MyFavoriteArticleAdmin(admin.ModelAdmin):
+    list_display = ['article', 'user', 'dt_create']

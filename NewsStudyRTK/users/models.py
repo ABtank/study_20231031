@@ -1,6 +1,9 @@
 ﻿from django.db import models
 from django.contrib.auth.models import User
 
+from news.models import Article
+from my_news.models import MyArticle
+
 
 class Account(models.Model):
     gender_choices = (('M', 'Male'),
@@ -33,3 +36,14 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s account"
+
+
+class FavoriteArticle(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
+    create_at = models.DateTimeField(auto_now_add=True)
+
+class MyFavoriteArticle(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    article = models.ForeignKey(MyArticle, on_delete=models.SET_NULL, null=True)
+    dt_create = models.DateTimeField(auto_now_add=True)

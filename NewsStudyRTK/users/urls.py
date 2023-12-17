@@ -15,4 +15,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/update', views.profile_update, name='profile_update'),
     path('password', views.password_update, name='password'),
+    path('favorites/<int:article_id>', views.add_to_favorites, name='favorites'),
+    path('my_favorites/<int:article_id>', views.add_to_my_favorites, name='my_favorites'),
+    path('api/my_favorites', views.api_my_favorites, name='api_my_favorites'),
 ]

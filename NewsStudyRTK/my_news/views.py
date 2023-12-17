@@ -20,6 +20,7 @@ from users.models import Account
 from users.forms import AccountUpdateForm, UserUpdateForm
 
 from .utils import get_client_ip
+from users.models import MyFavoriteArticle
 
 
 class MyArticleUpdateView(UpdateView):
@@ -128,6 +129,7 @@ def publication(request, target):
     context['tags_list'] = tags_list
     context['authors_list'] = authors_list
 
+
     # Фильтр
     search = ''
     tags_selected = []
@@ -185,11 +187,17 @@ def publication(request, target):
         filters &= Q(author=request.user.id)
         print(target)
 
+    if target == "my_favorite":
+        my_f_ids = list(MyFavoriteArticle.objects.filter(user=request.user).values_list('article__id', flat=True))
+        print(my_f_ids)
+        filters &= Q(id__in=my_f_ids)
+        print(target)
+
     if not is_filtered and target in [category[0] for category in MyArticle.categories]:
         filters &= Q(category__iexact=target)
 
     match target:
-        case 'hot' | 'fresh' | 'best' | 'my':
+        case 'hot' | 'fresh' | 'best' | 'my' | 'my_favorite':
             articles = (MyArticle.objects
                         .select_related("author")
                         .prefetch_related('tags')
@@ -205,7 +213,8 @@ def publication(request, target):
     page_articles = paginator.get_page(page_number)
 
     print(filters)
-
+    print(page_articles)
+    context['my_f_ids'] = list(MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id', flat=True))
     context['target'] = target
     context['articles'] = page_articles
     context['tags_list'] = tags_list
@@ -351,12 +360,14 @@ def my_profile(request):
     count_hot_articles = MyArticle.objects.filter(author=user, category__iexact='hot').count()
     count_fresh_articles = MyArticle.objects.filter(author=user, category__iexact='fresh').count()
     count_best_articles = MyArticle.objects.filter(author=user, category__iexact='best').count()
+    count_my_favorite = MyFavoriteArticle.objects.filter(user=user).count()
     context = {'account_form': AccountUpdateForm(instance=account),
                'user_form': UserUpdateForm(instance=user),
                'count_my_articles': count_my_articles,
                'count_hot_articles': count_hot_articles,
                'count_fresh_articles': count_fresh_articles,
                'count_best_articles': count_best_articles,
+               'count_my_favorite': count_my_favorite,
                }
     return render(request, 'my_news/profile.html', context)
 

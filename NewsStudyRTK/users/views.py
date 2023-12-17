@@ -1,8 +1,10 @@
-﻿from django.contrib import messages
+﻿import json
+
+from django.contrib import messages
 from django.contrib.auth import authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import Group
 
@@ -10,10 +12,14 @@ from .forms import ContactForm, UserUpdateForm, AccountUpdateForm
 from .models import *
 from django.conf import settings
 
+from news.models import Article
+from my_news.models import MyArticle
+
 
 def profile(request):
     context = dict()
     return render(request, 'users/profile.html', context)
+
 
 def profile_update(request):
     user = request.user
@@ -28,26 +34,27 @@ def profile_update(request):
         if user_form.is_valid() and account_form.is_valid():
             user_form.save()
             account_form.save()
-            messages.success(request,"Профиль успешно обновлен")
+            messages.success(request, "Профиль успешно обновлен")
             return redirect('profile')
     else:
-        context = {'account_form':AccountUpdateForm(instance=account),
-                   'user_form':UserUpdateForm(instance=user)}
-    return render(request,'users/edit_profile.html',context)
+        context = {'account_form': AccountUpdateForm(instance=account),
+                   'user_form': UserUpdateForm(instance=user)}
+    return render(request, 'users/edit_profile.html', context)
 
 
 def password_update(request):
     user = request.user
-    form = PasswordChangeForm(user,request.POST)
+    form = PasswordChangeForm(user, request.POST)
     if request.method == 'POST':
         if form.is_valid():
             password_info = form.save()
-            update_session_auth_hash(request,password_info)
-            messages.success(request,'Пароль успешно изменен')
+            update_session_auth_hash(request, password_info)
+            messages.success(request, 'Пароль успешно изменен')
             return redirect('profile')
 
     context = {"form": form}
-    return render(request,'users/edit_password.html',context)
+    return render(request, 'users/edit_password.html', context)
+
 
 @login_required(login_url=settings.LOGOUT_REDIRECT_URL)
 def contact_page(request):
@@ -96,3 +103,60 @@ def registration(request):
         form = UserCreationForm()
     context = {'form': form}
     return render(request, 'users/registration.html', context)
+
+
+@login_required
+def add_to_favorites(request, article_id):
+    article = Article.objects.get(id=article_id)
+    # проверям есть ли такая закладка с этой новостью
+    bookmark = FavoriteArticle.objects.filter(user=request.user.id,
+                                              article=article)
+    if bookmark.exists():
+        bookmark.delete()
+        messages.warning(request, f"Новость {article.title} удалена из закладок")
+    else:
+        bookmark = FavoriteArticle.objects.create(user=request.user, article=article)
+        messages.success(request, f"Новость {article.title} добавлена в закладки")
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+@login_required
+def add_to_my_favorites(request, article_id):
+    article = MyArticle.objects.get(id=article_id)
+    # проверям есть ли такая закладка с этой новостью
+    bookmark = MyFavoriteArticle.objects.filter(user=request.user.id,
+                                                article=article)
+    if bookmark.exists():
+        bookmark.delete()
+        messages.warning(request, f"Новость {article.title} удалена из закладок")
+    else:
+        bookmark = MyFavoriteArticle.objects.create(user=request.user, article=article)
+        messages.success(request, f"Новость {article.title} добавлена в закладки")
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+
+
+def api_my_favorites(request):
+    print('api_my_favorites')
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest'\
+            and request.method == 'POST' and request.POST.get('article_id', None) is not None:
+        article_id = request.POST.get('article_id', None)
+        print('article_id')
+        article = MyArticle.objects.get(id=article_id)
+        # проверям есть ли такая закладка с этой новостью
+        bookmark = MyFavoriteArticle.objects.filter(user=request.user.id,
+                                                    article=article)
+        mes = {'text': f"Ошибка запроса", 'alert_class': 'danger'}
+        exists = bookmark.exists()
+        if exists:
+            bookmark.delete()
+            mes = {'text': f"Новость {article.title} удалена из избранного", 'alert_class': 'warning'}
+        else:
+            bookmark = MyFavoriteArticle.objects.create(user=request.user, article=article)
+            mes = {'text': f"Новость {article.title} добавлена в избранное", 'alert_class': 'success'}
+
+        response = {'mes': mes, 'article_id': article_id, 'bookmark': not exists}
+
+        return JsonResponse(response, status=200)
+
+    return JsonResponse({'error': 'Ошибка запроса'}, status=401)
+

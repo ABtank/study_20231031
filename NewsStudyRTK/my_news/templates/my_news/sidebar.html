@@ -34,6 +34,11 @@
             <i class="bi bi-vector-pen"></i>
             Мои статьи</a>
         </li>
+        <li><a href="{% url 'publication' target='my_favorite' %}"
+               class="{% if target|default:''  == 'my_favorite' %}active{% endif %}">
+            <i class="bi bi-journal-bookmark-fill"></i>
+            В избранном</a>
+        </li>
         <li><a href="{% url 'create_my_article' %}" style="margin-top: 20px"
                class="{% if request.resolver_match.view_name == 'create_my_article' %}active{% endif %}">
             <i class="bi bi-plus-square"></i>

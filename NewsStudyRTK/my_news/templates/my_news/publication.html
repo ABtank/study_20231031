@@ -24,6 +24,46 @@
     var selectedObj = ui.item;
   }
 </script>
+    <script>
+        $(function () {
+            $(".my_favorite").on('click', function(event){
+                console.log(this.value)
+                const btn = $(this)
+                $.ajax({
+                    url: "{% url 'api_my_favorites' %}",
+                    type: "POST",
+                    dataType: "json",
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    data: {
+                        article_id: this.value
+                    },
+                    success: function (data) {
+                        console.log('success',data)
+                        btn.children('i').toggleClass("bi-heart")
+                        btn.children('i').toggleClass("bi-heart-fill")
+                        let rand=`alert_article_${Math.round(Math.random()*100000)}`
+                        let msg = $(`
+                            <div class="alert alert-${(data?.mes?.alert_class)?data?.mes?.alert_class:'info'}
+                                alert-dismissible fade show ${rand}" role="alert"
+                                style="top: 10px; position: fixed; max-width: fit-content; right: 5px; z-index: 1000;">
+                                ${data?.mes?.text}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                            `);
+                        console.log(msg)
+                        $('body').append(msg);
+                        setTimeout(() => {$(`.${rand}`).remove()},2000);
+                    },
+                    error: function (data) {
+                        console.log('error',data)
+                    }
+                })
+            })
+        });
+
+
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -69,8 +109,15 @@
                                         <i class="bi bi-hand-thumbs-up-fill"></i>
                                     </span>
                                     <span class="mx-4">
-                                        <i class="bi bi-journal-bookmark"></i>
-                                        <i class="bi bi-journal-bookmark-fill"></i>
+{#                                        <button class="my_favorite text-body-emphasis fw-bold btn btn-outline-primary rounded-pill" href="{% url 'my_favorites' article.pk %}"#}
+                                        <button class="my_favorite text-body-emphasis fw-bold btn rounded-pill"
+                                        value="{{ article.pk }}">
+                                        {% if article.pk in my_f_ids %}
+                                            <i class="bi bi-heart-fill"></i>
+                                        {% else %}
+                                            <i class="bi bi-heart"></i>
+                                        {% endif %}
+                                        </button>
                                     </span>
                                 </p>
                             </div>

@@ -18,32 +18,32 @@
         </h4>
         <ul class="list-group mb-3">
           <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
+            <div><a href="{% url 'publication' target='my' %}">
               <h6 class="my-0">Твои публикации</h6>
-              <small class="text-body-secondary">то что ты сам написал</small>
+              <small class="text-body-secondary">то что ты сам написал</small></a>
             </div>
             <span class="text-body-secondary">{{ count_my_articles }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
+            <div><a href="{% url 'publication' target='hot' %}">
               <h6 class="my-0">В горячем</h6>
-              <small class="text-body-secondary">то что высоко оценили</small>
+              <small class="text-body-secondary">то что высоко оценили</small></a>
             </div>
             <span class="text-body-secondary">{{ count_hot_articles }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
+            <div><a href="{% url 'publication' target='fresh' %}">
               <h6 class="my-0">В свежем</h6>
-              <small class="text-body-secondary">то что активно оценивали на старте</small>
+              <small class="text-body-secondary">то что активно оценивали на старте</small></a>
             </div>
             <span class="text-body-secondary">{{ count_fresh_articles }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between lh-sm">
-            <div>
-              <h6 class="my-0">Сохраненные</h6>
-              <small class="text-body-secondary">потом почитать или интересное что пригодиться</small>
+            <div><a href="{% url 'publication' target='my_favorite' %}">
+              <h6 class="my-0">В избранном</h6>
+              <small class="text-body-secondary">потом почитать или интересное что пригодиться</small></a>
             </div>
-            <span class="text-body-secondary">5</span>
+            <span class="text-body-secondary">{{ count_my_favorite }}</span>
           </li>
           <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
             <div class="text-success">
