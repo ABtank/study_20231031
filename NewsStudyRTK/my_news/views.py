@@ -128,6 +128,7 @@ def publication(request, target):
     authors_list = User.objects.annotate(Count('myarticle', distinct=True))
     context['tags_list'] = tags_list
     context['authors_list'] = authors_list
+    context['my_f_ids'] = []
 
 
     # Фильтр
@@ -185,13 +186,10 @@ def publication(request, target):
 
     if target == "my":
         filters &= Q(author=request.user.id)
-        print(target)
 
-    if target == "my_favorite":
+    if target == "my_favorite" and request.user.id is not None:
         my_f_ids = list(MyFavoriteArticle.objects.filter(user=request.user).values_list('article__id', flat=True))
-        print(my_f_ids)
         filters &= Q(id__in=my_f_ids)
-        print(target)
 
     if not is_filtered and target in [category[0] for category in MyArticle.categories]:
         filters &= Q(category__iexact=target)
@@ -213,8 +211,8 @@ def publication(request, target):
     page_articles = paginator.get_page(page_number)
 
     print(filters)
-    print(page_articles)
-    context['my_f_ids'] = list(MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id', flat=True))
+    if request.user.id is not None:
+        context['my_f_ids'] = list(MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id', flat=True))
     context['target'] = target
     context['articles'] = page_articles
     context['tags_list'] = tags_list

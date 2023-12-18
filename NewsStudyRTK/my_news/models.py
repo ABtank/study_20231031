@@ -10,7 +10,8 @@ class MyTag(models.Model):
     status = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"title = {self.title} status = {self.status}"
+        return self.title
+        # return f"title = {self.title} status = {self.status}"
 
     # метаданные модели
     class Meta:
