@@ -101,3 +101,55 @@ python -m pip install django-crispy-forms
 ```
 python -m pip install crispy-bootstrap5
  ```
+
+### Переход на Postgres
+1) Установка необходимых библиотек
+для сохранения ключей в окружении
+ ```
+pip install django-environ
+```
+для работы с БД
+ ```
+pip install psycopg2
+```
+ Для MacOS
+ ```
+pip install psycopg2-binary 
+```
+
+дамп БД из sqlite
+``` 
+python manage.py dumpdata > data.json
+```
+либо лучше 
+```
+python .\NewsStudyRTK\manage.py dumpdata --indent=2 -o  data.json
+```
+
+
+создаем пустую структуру в новой БД
+```
+python .\NewsStudyRTK\manage.py migrate
+```
+
+удаляем все записи миграции
+выполняем создание новых миграций
+делаем миграцию
+чистим типы данных чтоб не было конфликтов в типах
+```
+python .\NewsStudyRTK\manage.py shell
+```
+```
+from django.contrib.contenttypes.models import ContentType
+```
+``` 
+ContentType.objects.all().delete()
+```
+``` 
+quit()
+```
+загружаем дамп старой БД
+``` 
+python .\NewsStudyRTK\manage.py loaddata .\data.json
+```
+если че не получается то скорей всего кодировка файла data.json не UTF-8
