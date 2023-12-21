@@ -18,7 +18,9 @@
 
         <form method="post" class="text-center w-25">
             {% csrf_token %}
-            <span><img class="me-2" width="40" height="32" role="img" src="/static/my_news/assets/brand/MY_NEWS.png">MY_NEWS</span>
+            <a href="{% url 'my_news' %}" class="d-inline-flex link-body-emphasis text-decoration-none text-white">
+                    <img class="me-2" width="40" height="32" role="img"
+                         src="{% static 'my_news/' %}assets/brand/MY_NEWS.png"/> MY_NEWS</a>
             <h1 class="h3 mb-3 fw-normal">Давай логинься</h1>
 
 {#            <div class="form-floating p-1">#}

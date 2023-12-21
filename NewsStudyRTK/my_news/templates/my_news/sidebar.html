@@ -1,4 +1,5 @@
 ﻿{% load static %}
+{% load users_extras %}
 
 <!-- Sidebar -->
 <nav class="navbar navbar-inverse fixed-top" id="sidebar-wrapper" role="navigation">
@@ -10,6 +11,12 @@
                          src="{% static 'my_news/' %}assets/brand/MY_NEWS.png"/> MY_NEWS</a>
             </div>
         </div>
+
+        {% if user.is_superuser or user.is_staff %}
+            <li><a href="/admin/"><i class="bi bi-house-door"></i> Админка</a></li>
+            <li><a href="{% url 'news_index' %}"><i class="bi bi-house-door"></i> Сайт магазина с уроков</a></li>
+        {% endif %}
+
         <li><a href="{% url 'my_news' %}"
                class="{% if request.resolver_match.view_name  == 'my_news' %}active{% endif %}">
             <i class="bi bi-house-door"></i>
@@ -29,11 +36,13 @@
             <i class="bi bi-bookmark-star"></i>
             Лучшее</a>
         </li>
+        {% if request.user|has_group:"Authors" %}
         <li><a href="{% url 'publication' target='my' %}"
                class="{% if target|default:''  == 'my' %}active{% endif %}">
             <i class="bi bi-vector-pen"></i>
             Мои статьи</a>
         </li>
+        {% endif %}
         <li><a href="{% url 'publication' target='my_favorite' %}"
                class="{% if target|default:''  == 'my_favorite' %}active{% endif %}">
             <i class="bi bi-journal-bookmark-fill"></i>

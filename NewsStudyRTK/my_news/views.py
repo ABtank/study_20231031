@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm, PasswordChangeForm
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db.models import Q, Count
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView, UpdateView
@@ -21,6 +21,8 @@ from users.forms import AccountUpdateForm, UserUpdateForm
 
 from .utils import get_client_ip
 from users.models import MyFavoriteArticle
+
+from users.utils import check_group
 
 
 class MyArticleUpdateView(UpdateView):
@@ -38,6 +40,11 @@ class MyArticleUpdateView(UpdateView):
         print(request.POST)
         request.POST = request.POST
         current_object = MyArticle.objects.get(id=request.POST['myimage_set-0-article'])
+
+        if not (current_object.author == request.user or request.user.is_superuser or request.user.is_staff):
+            messages.error(request, "Не правредактировать данную новость", 'danger')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
         deleted_ids = []
         for i in range(int(request.POST['myimage_set-TOTAL_FORMS'])):  # удаление всех по галочкам
             field_delete = f'myimage_set-{i}-DELETE'
@@ -130,7 +137,6 @@ def publication(request, target):
     context['authors_list'] = authors_list
     context['my_f_ids'] = []
 
-
     # Фильтр
     search = ''
     tags_selected = []
@@ -212,7 +218,9 @@ def publication(request, target):
 
     print(filters)
     if request.user.id is not None:
-        context['my_f_ids'] = list(MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id', flat=True))
+        context['my_f_ids'] = list(
+            MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id',
+                                                                                                       flat=True))
     context['target'] = target
     context['articles'] = page_articles
     context['tags_list'] = tags_list
@@ -275,6 +283,7 @@ def article(request, article_id, mode):
 
 
 @login_required(login_url="my_news")
+@check_group('Authors')  # пример использования декоратора
 def create_my_article(request):
     if request.method == 'POST':
         form = MyArticleForm(request.POST, request.FILES)
