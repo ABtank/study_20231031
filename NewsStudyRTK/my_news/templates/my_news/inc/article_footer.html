@@ -17,7 +17,7 @@
                 {% for thumbs in thumbs_list %}
                     {% for key, value in thumbs.items %}
                         {% if key == article.pk %}
-                            {{ value.down }}
+                            {% if value.down != 0 %}-{% else %}{% endif %}{{ value.down }}
                         {% endif %}
                     {% endfor %}
                 {% endfor %}
