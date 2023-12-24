@@ -6,6 +6,8 @@
             integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
             crossorigin="anonymous">
     </script>
+
+    {% include 'my_news/js/article_footer.html' %}
 {% endblock %}
 {% block body %}
     <!--{{request.resolver_match}}-->
@@ -45,6 +47,7 @@
                         {{ article.text }}
                     </div>
                 </article>
+                {% include 'my_news/inc/article_footer.html' %}
 
                 <div class="py-3 row justify-content-between">
                     <div class="col-auto mr-auto"><a class="btn btn-outline-primary rounded-pill" href="#">Вверх</a>

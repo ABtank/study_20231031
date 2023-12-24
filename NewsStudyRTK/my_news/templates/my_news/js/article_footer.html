@@ -1,0 +1,100 @@
+﻿{% load static %}
+
+<script>
+    $(function () {
+        $(".my_favorite").on('click', function(event){
+            {% if not request.user.id %}
+                return showMessage("Вы не авторизованы.", 'danger');
+            {% endif %}
+            const btn = $(this)
+            $.ajax({
+                url: "{% url 'api_my_favorites' %}",
+                type: "POST",
+                dataType: "json",
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                data: {
+                    article_id: this.value
+                },
+                success: function (data) {
+                    btn.children('i').toggleClass("bi-heart")
+                    btn.children('i').toggleClass("bi-heart-fill")
+                    showMessage(data?.mes?.text,(data?.mes?.alert_class)?data?.mes?.alert_class:'info')
+                },
+                error: function (data) {
+                    console.log('error',data)
+                }
+            })
+        })
+
+        $(".thumbs_down,.thumbs_up").on('click', function(event){
+            {% if not request.user.id %}
+            return showMessage("Вы не авторизованы.", 'danger');
+            {% endif %}
+            const $btn = $(this)
+            let rating = 0;
+            let article_id = Number(this.value);
+            let $thumb = $btn.children('i');
+            let $article_thumb_down = $(`#thumb_down_${article_id}`);
+            let $article_thumb_up = $(`#thumb_up_${article_id}`);
+            if($thumb.hasClass('bi-hand-thumbs-down')) {
+                rating = -1;
+            }
+            if($thumb.hasClass('bi-hand-thumbs-up')) {
+                rating = 1;
+            }
+            $.ajax({
+                url: "{% url 'api_thumbs_article' %}",
+                type: "POST",
+                dataType: "json",
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                data: {
+                    article_id: article_id,
+                    rating: rating
+                },
+                success: function (data) {
+                    let $article_thumbs=$(`button.thumbs_down[value="${article_id}"],button.thumbs_up[value="${article_id}"]`).children('i');
+                    $.each($article_thumbs,function(index,item){
+                        if(rating > 0) {
+                            if($(item).hasClass('bi-hand-thumbs-up')){
+                                $(item).removeClass("bi-hand-thumbs-up")
+                                $(item).addClass("bi-hand-thumbs-up-fill")
+                                $article_thumb_up.text(Number($article_thumb_up.text())+rating);
+                            }
+                            if($(item).hasClass('bi-hand-thumbs-down-fill')){
+                                $(item).removeClass("bi-hand-thumbs-down-fill")
+                                $(item).addClass("bi-hand-thumbs-down")
+                                $article_thumb_down.text(Number($article_thumb_down.text())+rating);
+                            }
+                        } else if(rating < 0) {
+                            if($(item).hasClass('bi-hand-thumbs-up-fill')){
+                                $(item).addClass("bi-hand-thumbs-up")
+                                $(item).removeClass("bi-hand-thumbs-up-fill")
+                                $article_thumb_up.text(Number($article_thumb_up.text())+rating);
+                            }
+                            if($(item).hasClass('bi-hand-thumbs-down')){
+                                $(item).addClass("bi-hand-thumbs-down-fill")
+                                $(item).removeClass("bi-hand-thumbs-down")
+                                $article_thumb_down.text(Number($article_thumb_down.text())+rating);
+                            }
+                        } else {
+                            if($(item).hasClass('bi-hand-thumbs-up-fill')){
+                                $(item).addClass("bi-hand-thumbs-up")
+                                $(item).removeClass("bi-hand-thumbs-up-fill")
+                                $article_thumb_up.text(Number($article_thumb_up.text())-1);
+                            }
+                            if($(item).hasClass('bi-hand-thumbs-down-fill')){
+                                $(item).removeClass("bi-hand-thumbs-down-fill")
+                                $(item).addClass("bi-hand-thumbs-down")
+                                $article_thumb_down.text(Number($article_thumb_down.text())+1);
+                            }
+                        }
+                    })
+                    showMessage(data?.mes?.text,(data?.mes?.alert_class)?data?.mes?.alert_class:'info')
+                },
+                error: function (data) {
+                    console.log('error',data)
+                }
+            })
+        })
+    });
+</script>

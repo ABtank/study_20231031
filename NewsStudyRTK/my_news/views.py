@@ -1,4 +1,5 @@
-﻿import json
+﻿import datetime
+import json
 import random
 
 from django.contrib import messages
@@ -11,6 +12,7 @@ from django.db.models import Q, Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import DeleteView, UpdateView
 
 from .forms import MyArticleForm, ImagesFormSet
@@ -265,10 +267,31 @@ def article(request, article_id, mode):
         return redirect('publication', target='fresh')
 
     context["article"] = article
+    context['my_thumb_up'] = []
+    context['my_thumb_down'] = []
+    context['thumbs_list'] = []
     match mode:
         case 'view':
             print('view')
             MyViewCount.objects.get_or_create(article=article, ip_address=get_client_ip(request))
+            thumbs_list = []
+            up = MyHandThumbsArticle.objects.filter(article=article, rating__gt=0).count()
+            down = MyHandThumbsArticle.objects.filter(article=article, rating__lt=0).count()
+            thumbs_list.append({article.pk: {'up': up, 'down': down}})
+            context['thumbs_list'] = thumbs_list
+            if request.user.id is not None:
+                context['my_f_ids'] = list(
+                    MyFavoriteArticle.objects.filter(user=request.user, article=article).values_list(
+                        'article__id',
+                        flat=True))
+                context['my_thumb_up'] = list(
+                    MyHandThumbsArticle.objects.filter(article=article, user=request.user,
+                                                       rating__gt=0).values_list(
+                        'article__id', flat=True))
+                context['my_thumb_down'] = list(
+                    MyHandThumbsArticle.objects.filter(article=article, user=request.user,
+                                                       rating__lt=0).values_list(
+                        'article__id', flat=True))
         case 'edit':
             if request.method == "POST":
                 print("POST")
@@ -385,6 +408,21 @@ def my_profile(request):
     count_fresh_articles = MyArticle.objects.filter(author=user, category__iexact='fresh').count()
     count_best_articles = MyArticle.objects.filter(author=user, category__iexact='best').count()
     count_my_favorite = MyFavoriteArticle.objects.filter(user=user).count()
+    my_thumb_up = MyHandThumbsArticle.objects.filter(user=request.user, rating__gt=0).count()
+
+    today = timezone.now().date()
+    my_thumb_up_today = MyHandThumbsArticle.objects.filter(user=request.user, rating__gt=0,
+                                                           dt_create__date=today).count()
+    my_thumb_down_today = MyHandThumbsArticle.objects.filter(user=request.user, rating__lt=0,
+                                                             dt_create__date=today).count()
+    my_thumb_down = MyHandThumbsArticle.objects.filter(user=request.user, rating__lt=0).count()
+    me_thumb_down = MyHandThumbsArticle.objects.filter(
+        article__in=MyArticle.objects.filter(author=request.user)
+        , rating__lt=0).count()
+    me_thumb_up = MyHandThumbsArticle.objects.filter(
+        article__in=MyArticle.objects.filter(author=request.user)
+        , rating__gt=0).count()
+
     context = {'account_form': AccountUpdateForm(instance=account),
                'user_form': UserUpdateForm(instance=user),
                'count_my_articles': count_my_articles,
@@ -392,6 +430,12 @@ def my_profile(request):
                'count_fresh_articles': count_fresh_articles,
                'count_best_articles': count_best_articles,
                'count_my_favorite': count_my_favorite,
+               'my_thumb_up': my_thumb_up,
+               'my_thumb_down': my_thumb_down,
+               'me_thumb_down': me_thumb_down,
+               'me_thumb_up': me_thumb_up,
+               'my_thumb_up_today': my_thumb_up_today,
+               'my_thumb_down_today': my_thumb_down_today,
                }
     return render(request, 'my_news/profile.html', context)
 

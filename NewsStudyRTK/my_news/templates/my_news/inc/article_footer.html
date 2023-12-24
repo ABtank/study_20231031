@@ -1,0 +1,61 @@
+﻿{% load static %}
+
+<div class="row justify-content-evenly">
+    <div class="col"><p class="lead my-3"><b>Категория: </b><u>{{ article.category }}</u>
+        <b class="ms-5">Автор: </b><i>{{ article.author.username }}</i></p>
+    </div>
+    <div class="col">
+        <p class="my-3"><b>Дата публикации: </b><u>{{ article.dt_public|date }}</u></p>
+    </div>
+    <div class="col">
+        <p class="my-3">
+            <b>{{ article.get_views_count }} <span class="bi bi-eye"></span></b>
+
+            <button class="thumbs_down text-body-emphasis fw-bold btn rounded-pill"
+                value="{{ article.pk }}">
+                <span id="thumb_down_{{ article.pk }}">
+                {% for thumbs in thumbs_list %}
+                    {% for key, value in thumbs.items %}
+                        {% if key == article.pk %}
+                            {{ value.down }}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                </span>
+                {% if article.pk in my_thumb_down %}
+                    <i class="bi bi-hand-thumbs-down-fill"></i>
+                {% else %}
+                    <i class="bi bi-hand-thumbs-down"></i>
+                {% endif %}
+            </button>
+            <button class="thumbs_up text-body-emphasis fw-bold btn rounded-pill"
+                value="{{ article.pk }}">
+                 <span id="thumb_up_{{ article.pk }}">
+                {% for thumbs in thumbs_list %}
+                    {% for key, value in thumbs.items %}
+                        {% if key == article.pk %}
+                            {{ value.up }}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+                </span>
+                {% if article.pk in my_thumb_up %}
+                    <i class="bi bi-hand-thumbs-up-fill"></i>
+                {% else %}
+                    <i class="bi bi-hand-thumbs-up"></i>
+                {% endif %}
+            </button>
+
+            <span class="mx-4">
+                <button class="my_favorite text-body-emphasis fw-bold btn rounded-pill"
+                value="{{ article.pk }}">
+                {% if article.pk in my_f_ids %}
+                    <i class="bi bi-heart-fill"></i>
+                {% else %}
+                    <i class="bi bi-heart"></i>
+                {% endif %}
+                </button>
+            </span>
+        </p>
+    </div>
+</div>
