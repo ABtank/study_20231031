@@ -20,7 +20,7 @@ from users.models import Account
 from users.forms import AccountUpdateForm, UserUpdateForm
 
 from .utils import get_client_ip
-from users.models import MyFavoriteArticle
+from users.models import MyFavoriteArticle, MyHandThumbsArticle
 
 from users.utils import check_group
 
@@ -136,6 +136,8 @@ def publication(request, target):
     context['tags_list'] = tags_list
     context['authors_list'] = authors_list
     context['my_f_ids'] = []
+    context['my_thumb_up'] = []
+    context['my_thumb_down'] = []
 
     # Фильтр
     search = ''
@@ -216,13 +218,28 @@ def publication(request, target):
     page_number = request.GET.get('page')  # номер страницы, полученный из запроса
     page_articles = paginator.get_page(page_number)
 
+    thumbs_list = []
+    for article in page_articles:
+        up = MyHandThumbsArticle.objects.filter(article=article, rating__gt=0).count()
+        down = MyHandThumbsArticle.objects.filter(article=article, rating__lt=0).count()
+        thumbs_list.append({article.pk: {'up': up, 'down': down}})
+
+    print(thumbs_list)
     print(filters)
     if request.user.id is not None:
         context['my_f_ids'] = list(
             MyFavoriteArticle.objects.filter(user=request.user, article__in=page_articles).values_list('article__id',
                                                                                                        flat=True))
+        context['my_thumb_up'] = list(
+            MyHandThumbsArticle.objects.filter(article__in=page_articles, user=request.user, rating__gt=0).values_list(
+                'article__id', flat=True))
+        context['my_thumb_down'] = list(
+            MyHandThumbsArticle.objects.filter(article__in=page_articles, user=request.user, rating__lt=0).values_list(
+                'article__id', flat=True))
+
     context['target'] = target
     context['articles'] = page_articles
+    context['thumbs_list'] = thumbs_list
     context['tags_list'] = tags_list
     context['tags_selected'] = tags_selected
     context['categories_list'] = MyArticle.categories

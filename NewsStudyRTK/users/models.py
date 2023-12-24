@@ -1,4 +1,5 @@
-﻿from django.db import models
+﻿from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.contrib.auth.models import User
 
 from news.models import Article
@@ -43,7 +44,20 @@ class FavoriteArticle(models.Model):
     article = models.ForeignKey(Article, on_delete=models.SET_NULL, null=True)
     create_at = models.DateTimeField(auto_now_add=True)
 
+
 class MyFavoriteArticle(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     article = models.ForeignKey(MyArticle, on_delete=models.SET_NULL, null=True)
     dt_create = models.DateTimeField(auto_now_add=True)
+
+
+class MyHandThumbsArticle(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    article = models.ForeignKey(MyArticle, on_delete=models.CASCADE, null=False)
+    rating = models.IntegerField(default=0, null=False, validators=[MinValueValidator(-1), MaxValueValidator(1)])
+    dt_create = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['dt_create']
+        verbose_name = "Лайк"
+        verbose_name_plural = "Лайки"

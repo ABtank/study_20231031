@@ -18,4 +18,5 @@ urlpatterns = [
     path('favorites/<int:article_id>', views.add_to_favorites, name='favorites'),
     path('my_favorites/<int:article_id>', views.add_to_my_favorites, name='my_favorites'),
     path('api/my_favorites', views.api_my_favorites, name='api_my_favorites'),
+    path('api/api_thumbs_article', views.api_thumbs_article, name='api_thumbs_article'),
 ]

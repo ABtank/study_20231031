@@ -86,6 +86,21 @@ function removeElements() {
    }
 }
 
+function showMessage(text,alert_class) {
+    let rand=`alert_article_${Math.round(Math.random()*100000)}`;
+    let msg = $(`
+        <div class="alert alert-${(alert_class)?alert_class:'info'}
+            alert-dismissible fade show ${rand}" role="alert"
+            style="top: 10px; position: fixed; max-width: fit-content; right: 5px; z-index: 1000;">
+            ${text}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                    aria-label="Close"></button>
+        </div>
+        `);
+    $('body').append(msg);
+    setTimeout(() => {$(`.${rand}`).remove()},2000);
+}
+
 // Выполнение функции после загрузки страницы
 window.addEventListener('load', function() {
    // Запуск функции removeElements через 5 секунд

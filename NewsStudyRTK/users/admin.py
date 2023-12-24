@@ -16,6 +16,13 @@ admin.site.register(Account, AccountAdmin)
 class FavoriteArticleAdmin(admin.ModelAdmin):
     list_display = ['article', 'user', 'create_at']
 
+
 @admin.register(MyFavoriteArticle)
 class MyFavoriteArticleAdmin(admin.ModelAdmin):
     list_display = ['article', 'user', 'dt_create']
+
+
+@admin.register(MyHandThumbsArticle)
+class MyHandThumbsArticleAdmin(admin.ModelAdmin):
+    title = 'Лайки'
+    list_display = ['article', 'user', 'dt_create', 'rating']

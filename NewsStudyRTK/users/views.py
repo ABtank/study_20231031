@@ -135,9 +135,10 @@ def add_to_my_favorites(request, article_id):
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
+@login_required
 def api_my_favorites(request):
     print('api_my_favorites')
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest'\
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' \
             and request.method == 'POST' and request.POST.get('article_id', None) is not None:
         article_id = request.POST.get('article_id', None)
         print('article_id')
@@ -160,3 +161,33 @@ def api_my_favorites(request):
 
     return JsonResponse({'error': 'Ошибка запроса'}, status=401)
 
+
+@login_required
+def api_thumbs_article(request):
+    print('api_thumbs_article')
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' \
+            and request.method == 'POST' and request.POST.get('article_id', None) is not None:
+        article_id = request.POST.get('article_id', None)
+        rating = request.POST.get('rating', 0)
+        print('article_id=', article_id,article_id is not None, 'rating=', rating,rating in ['-1', '0', '1'])
+        if article_id is not None and int(rating) in [-1, 0, 1]:
+            article = MyArticle.objects.get(id=article_id)
+            print('article',article)
+            thumbs = MyHandThumbsArticle.objects.filter(user=request.user.id, article=article).first()
+            print('thumbs',thumbs)
+            if thumbs is None:
+                MyHandThumbsArticle.objects.create(user=request.user, article=article, rating=rating)
+                mes = {'text': f"Новость {article.title} оценка {rating} учтена", 'alert_class': 'info'}
+            else:
+                if int(rating) == 0:
+                    thumbs.delete()
+                    mes = {'text': f"Новость {article.title} оценка удалена", 'alert_class': 'info'}
+                else:
+                    thumbs.rating = rating
+                    thumbs.save()
+                    mes = {'text': f"Новость {article.title} оценка {rating} учтена", 'alert_class': 'info'}
+
+            response = {'mes': mes, 'article_id': article_id, 'rating': rating}
+            return JsonResponse(response, status=200)
+
+    return JsonResponse({'error': 'Ошибка запроса'}, status=401)
