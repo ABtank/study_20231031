@@ -129,7 +129,7 @@ def index(request):
 
 
 def publication(request, target):
-    random_article(target)
+    # random_article(target)
     context = {}
     tags_list = (MyTag.objects
                  .annotate(num_articles=Count('myarticle'))
