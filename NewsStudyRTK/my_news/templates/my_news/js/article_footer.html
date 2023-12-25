@@ -16,8 +16,8 @@
                     article_id: this.value
                 },
                 success: function (data) {
-                    btn.children('i').toggleClass("bi-heart")
-                    btn.children('i').toggleClass("bi-heart-fill")
+                    btn.children('i').toggleClass("bi-tags")
+                    btn.children('i').toggleClass("bi-tags-fill")
                     showMessage(data?.mes?.text,(data?.mes?.alert_class)?data?.mes?.alert_class:'info')
                 },
                 error: function (data) {

@@ -14,7 +14,9 @@
 
         {% if user.is_superuser or user.is_staff %}
             <li><a href="/admin/"><i class="bi bi-house-door"></i> Админка</a></li>
-            <li><a href="{% url 'news_index' %}"><i class="bi bi-house-door"></i> Сайт магазина с уроков</a></li>
+            <li><a href="{% url 'shop' %}"><i class="bi bi-house-door"></i> Магазина с уроков</a></li>
+            <li><a href="{% url 'news_index' %}"><i class="bi bi-house-door"></i> Новости с уроков</a></li>
+            <li style="margin-top: 20px"></li>
         {% endif %}
 
         <li><a href="{% url 'my_news' %}"
@@ -45,7 +47,7 @@
         {% endif %}
         <li><a href="{% url 'publication' target='my_favorite' %}"
                class="{% if target|default:''  == 'my_favorite' %}active{% endif %}">
-            <i class="bi bi-journal-bookmark-fill"></i>
+            <i class="bi bi-tags-fill"></i>
             В избранном</a>
         </li>
         <li><a href="{% url 'create_my_article' %}" style="margin-top: 20px"

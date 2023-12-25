@@ -1,15 +1,20 @@
 ﻿{% load static %}
 
 <div class="row justify-content-evenly">
-    <div class="col"><p class="lead my-3"><b>Категория: </b><u>{{ article.category }}</u>
-        <b class="ms-5">Автор: </b><i>{{ article.author.username }}</i></p>
+    <div class="col d-none d-md-block">
+        <p class="my-sm-0 my-md-3">
+            <small><b>Категория: </b><u>{{ article.category }}</u></small><br>
+            <small><b class="my-sm-0 my-md-3">Автор: </b><i>{{ article.author.username }}</i></small>
+        </p>
+    </div>
+    <div class="col d-none d-lg-block">
+        <small><p class="my-sm-0 my-md-3"><u>{{ article.dt_public|date }}</u></p></small>
     </div>
     <div class="col">
-        <p class="my-3"><b>Дата публикации: </b><u>{{ article.dt_public|date }}</u></p>
-    </div>
-    <div class="col">
-        <p class="my-3">
-            <b>{{ article.get_views_count }} <span class="bi bi-eye"></span></b>
+        <p class="lead my-sm-0 my-md-3">
+            <button type="button" class="text-body-emphasis fw-bold btn rounded-pill">
+                {{ article.get_views_count }} <span class="bi bi-eye"></span>
+            </button>
 
             <button class="thumbs_down text-body-emphasis fw-bold btn rounded-pill"
                 value="{{ article.pk }}">
@@ -46,16 +51,14 @@
                 {% endif %}
             </button>
 
-            <span class="mx-4">
-                <button class="my_favorite text-body-emphasis fw-bold btn rounded-pill"
-                value="{{ article.pk }}">
-                {% if article.pk in my_f_ids %}
-                    <i class="bi bi-heart-fill"></i>
-                {% else %}
-                    <i class="bi bi-heart"></i>
-                {% endif %}
-                </button>
-            </span>
+            <button class="my_favorite text-body-emphasis fw-bold btn rounded-pill"
+            value="{{ article.pk }}">
+            {% if article.pk in my_f_ids %}
+                <i class="bi bi-tags-fill"></i>
+            {% else %}
+                <i class="bi bi-tags"></i>
+            {% endif %}
+            </button>
         </p>
     </div>
 </div>
